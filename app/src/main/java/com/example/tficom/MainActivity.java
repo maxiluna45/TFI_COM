@@ -18,4 +18,9 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, Emision.class);
         startActivity(intent);
     }
+
+    public void openReception(View view) {
+        Intent intent2 = new Intent(this, Recepcion.class);
+        startActivity(intent2);
+    }
 }

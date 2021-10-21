@@ -10,7 +10,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TFICOM">
         <activity
+            android:name=".Reproductor"
+            android:exported="true" />
+        <activity
             android:name=".Emision"
+            android:exported="true" />
+        <activity
+            android:name=".Recepcion"
             android:exported="true" />
         <activity
             android:name=".MainActivity"

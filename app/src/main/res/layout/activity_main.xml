@@ -23,7 +23,7 @@
         android:layout_width="196dp"
         android:layout_height="73dp"
         android:layout_marginBottom="212dp"
-        android:onClick="receptionView"
+        android:onClick="openReception"
         android:text="Recepcion"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
