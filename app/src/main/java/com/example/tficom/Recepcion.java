@@ -2,6 +2,7 @@ package com.example.tficom;
 
 import static com.example.tficom.BuildConfig.DEBUG;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -16,6 +17,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
@@ -38,7 +40,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
@@ -195,6 +199,9 @@ public class Recepcion extends AppCompatActivity {
         String time = med.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION);
         int videoLenght = (Integer.parseInt(time)/1000);
         int frameNumber = videoLenght * 30;
+        ArrayList<Integer> bmRGB = new ArrayList<>();
+        int maxLuminance = 0;
+        int minLuminance = 0;
 
         // AV_FRAMECAPTURE
         /*for (long i = 1; i < frameNumber+1; i++)
@@ -214,13 +221,62 @@ public class Recepcion extends AppCompatActivity {
 
         // FFMPEG
         for(long i = 1; i < frameNumber+1; i++){
+            int averageColor;
+            int luminance = 0;
+
             Bitmap bmp = med.getFrameAtTime((i*33333), FFmpegMediaMetadataRetriever.OPTION_CLOSEST);
-            //saveImage(bmp);
-            //saveToInternalStorage(bmp);
-            saveImageToGallery(bmp);
-            //MediaStore.Images.Media.insertImage(getContentResolver(), bmp, "title"+i , "description"+i);
-            //Do something
+
+            if(isStart())
+            {
+                averageColor = getRGBAverage(bmp);
+                bmRGB.add(averageColor);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    luminance = getRelativeLuminance(averageColor);
+                    if (luminance >= maxLuminance)
+                        maxLuminance = luminance;
+                    else if (luminance <= minLuminance)
+                        maxLuminance = luminance;
+                }
+            }
+
+
         }
+    }
+
+    private boolean isStart() {
+        return true;
+    }
+
+
+    private int getRGBAverage(Bitmap bitmap){
+        long redColor = 0;
+        long greenColor = 0;
+        long blueColor= 0;
+        long pixelCount = 0;
+        int average = 0;
+
+        for(int i = 0; i < bitmap.getHeight(); i++)
+        {
+            for(int j = 0; j < bitmap.getWidth();j++)
+            {
+                int px = bitmap.getPixel(i, j);
+                pixelCount ++;
+                redColor = Color.red(px);
+                greenColor = Color.green(px);
+                blueColor = Color.blue(px);
+            }
+        }
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            average = Color.rgb(redColor/pixelCount, greenColor/pixelCount, blueColor/pixelCount);
+
+        }
+        return average;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private int getRelativeLuminance(int number){
+        return (int) Color.luminance(number);
     }
 
     private void captureFrame(String VIDEO_FILE_PATH, long SNAPSHOT_DURATION_IN_MILLIS, int SNAPSHOT_WIDTH, int SNAPSHOT_HEIGHT) {
@@ -257,23 +313,25 @@ public class Recepcion extends AppCompatActivity {
     }
 
     public void grabar(View v) {
-        // create new Intentwith with Standard Intent action that can be
-        // sent to have the camera application capture an video and return it.
+        // Crea un nuevo Intent con un IntentAaction que puede ser enviado
+        // para hacer que la camara capture un video, y lo returne
+
+        // Estas siguientes lineas son para forzar el uso de la cámara y del almacenamiento interno
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
 
         Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
 
-        // create a file to save the video
+        // Se crea un archivo para guardar el video
         fileUri = getOutputMediaFileUri(MEDIA_TYPE_VIDEO);
 
-        // set the image file name
+        // Se incluye el nombre del archivo
         intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
 
-        // set the video image quality to high
+        // Se setea la calidad del video
         intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
 
-        // start the Video Capture Intent
+        // Inicia el Intent para capturar el video
         startActivityForResult(intent, CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE);
     }
 
@@ -287,6 +345,10 @@ public class Recepcion extends AppCompatActivity {
             Log.i("Mensaje", "Se tiene permiso para leer!");
         }
     }
+
+    // Funcion para guardar un bitmap en la galeria como un jpeg
+    // No es necesaria, pero a fines de pruebas se incluye
+
     private void saveImageToGallery(Bitmap bitmap){
 
         OutputStream fos;
