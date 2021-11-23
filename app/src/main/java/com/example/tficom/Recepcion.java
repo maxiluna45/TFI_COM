@@ -39,6 +39,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -226,28 +227,63 @@ public class Recepcion extends AppCompatActivity {
 
             Bitmap bmp = med.getFrameAtTime((i*33333), FFmpegMediaMetadataRetriever.OPTION_CLOSEST);
 
-            if(isStart())
-            {
-                averageColor = getRGBAverage(bmp);
-                bmRGB.add(averageColor);
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    luminance = getRelativeLuminance(averageColor);
-                    if (luminance >= maxLuminance)
-                        maxLuminance = luminance;
-                    else if (luminance <= minLuminance)
-                        maxLuminance = luminance;
-                }
+            averageColor = getRGBAverage(bmp);
+            bmRGB.add(averageColor);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                luminance = getRelativeLuminance(averageColor);
+                if (luminance >= maxLuminance)
+                    maxLuminance = luminance;
+                else if (luminance <= minLuminance)
+                    maxLuminance = luminance;
             }
 
+        }
 
+        getMsg(bmRGB, maxLuminance, minLuminance);
+    }
+
+    private void getMsg(ArrayList<Integer> bmRGB, int maxLuminance, int minLuminance) {
+        boolean startFound = false;
+        String[] start = new String[21];
+        String startBits = "";
+        int averageLuminance = ((maxLuminance + minLuminance) / 2)/2;
+        for (int i = 0; i < bmRGB.size();i++)
+        {
+            if(!startFound)
+            {
+                if(!start[20].equals(""))
+                {
+                    start[i] = getWord(averageLuminance, bmRGB.get(i));
+                }
+                else
+                    {
+                        startBits += start[0] + start[2] + start[5] + start[8] + start[11] + start[14] + start[17] + start[20];
+                        if(startBits.equals("1000010"))
+                            startFound = true;
+                        else
+                            {
+                                for(int k = 0; k < start.length; k++)
+                                {
+                                    if(k == 20)
+                                        start[20] = "";
+                                    else
+                                        start[k] = start[k+1];
+                                }
+                            }
+                    }
+            }
+            else
+                {
+                    // OBTENER MENSAJE
+                }
         }
     }
 
-    private boolean isStart() {
-        return true;
+    private String getWord(int averageLuminance, Integer integer) {
+        if()
     }
-
 
     private int getRGBAverage(Bitmap bitmap){
         long redColor = 0;
