@@ -248,6 +248,8 @@ public class Recepcion extends AppCompatActivity {
         boolean startFound = false;
         String[] start = new String[21];
         String startBits = "";
+        int startPosition = 0;
+        int firstMsgPosition = 0;
         int averageLuminance = ((maxLuminance + minLuminance) / 2)/2;
         for (int i = 0; i < bmRGB.size();i++)
         {
@@ -259,9 +261,11 @@ public class Recepcion extends AppCompatActivity {
                 }
                 else
                     {
-                        startBits += start[0] + start[2] + start[5] + start[8] + start[11] + start[14] + start[17] + start[20];
-                        if(startBits.equals("1000010"))
+                        startBits += start[0] + start[3] + start[6] + start[9] + start[12] + start[15] + start[18];
+                        if(startBits.equals("1000010")){
                             startFound = true;
+                            startPosition = i;
+                        }
                         else
                             {
                                 for(int k = 0; k < start.length; k++)
@@ -273,17 +277,215 @@ public class Recepcion extends AppCompatActivity {
                                 }
                             }
                     }
+
+
             }
             else
                 {
-                    // OBTENER MENSAJE
+                    firstMsgPosition = startPosition+2;
+                    String msgBit = "";
+                    String bitSecuence = "";
+                    for (int k = firstMsgPosition; k < (bmRGB.size());k=k+3){
+                        msgBit = getWord(averageLuminance, bmRGB.get(k));
+                        bitSecuence += msgBit;
+                    }
+                    MsgDecodification((bitSecuence));
                 }
         }
     }
 
     private String getWord(int averageLuminance, Integer integer) {
-        if()
+
+        if(integer < averageLuminance){
+            return "0";
+        } else{
+            return "1";
+        }
     }
+
+    private void MsgDecodification(String bitSecuence){
+        String bitFrame = "";
+        String message = "";
+        String symbol = "";
+        int count = 0;
+        boolean errorFlag = false;
+        for (int i = 0; i < bitSecuence.length(); i++){
+            if (count < 7){
+                bitFrame += bitSecuence.charAt(i);
+                count += 1;
+            } else {
+                symbol = bitFrameDecodification(bitFrame);
+                if (symbol == "$"){
+                    errorFlag = true;
+                    break;
+                }
+                message += symbol;
+                count = 0;
+                bitFrame = "";
+            }
+
+        }
+        if (errorFlag){
+            //View(message);
+        } else {
+            //RepeatAlert();
+        }
+    }
+
+    private String bitFrameDecodification(String bitFrame){
+        boolean parity = ParityControl(bitFrame);
+        if (parity){
+            return "$";
+        }
+        else{
+            String symbol;
+            switch (bitFrame.substring(0,5)) {
+
+                case "111111":
+                    symbol = "a";
+                    break;
+                case "111110":
+                    symbol = "b";
+                    break;
+                case "111100":
+                    symbol = "c";
+                    break;
+                case "111101":
+                    symbol = "d";
+                    break;
+                case "111011":
+                    symbol = "e";
+                    break;
+                case "111010":
+                    symbol = "f";
+                    break;
+                case "111001":
+                    symbol = "g";
+                    break;
+                case "111000":
+                    symbol = "h";
+                    break;
+                case "110111":
+                    symbol = "i";
+                    break;
+                case "110110":
+                    symbol = "j";
+                    break;
+                case "110101":
+                    symbol = "k";
+                    break;
+                case "110100":
+                    symbol = "l";
+                    break;
+                case "110011":
+                    symbol = "m";
+                    break;
+                case "110010":
+                    symbol = "n";
+                    break;
+                case "110001":
+                    symbol = "ñ";
+                    break;
+                case "110000":
+                    symbol = "o";
+                    break;
+                case "101111":
+                    symbol = "p";
+                    break;
+                case "101110":
+                    symbol = "q";
+                    break;
+                case "101101":
+                    symbol = "r";
+                    break;
+                case "101100":
+                    symbol = "s";
+                    break;
+                case "101011":
+                    symbol = "t";
+                    break;
+                case "101010":
+                    symbol = "u";
+                    break;
+                case "101001":
+                    symbol = "v";
+                    break;
+                case "101000":
+                    symbol = "w";
+                    break;
+                case "100111":
+                    symbol = "x";
+                    break;
+                case "100110":
+                    symbol = "y";
+                    break;
+                case "100101":
+                    symbol = "z";
+                    break;
+                case "011110":
+                    symbol = "0";
+                    break;
+                case "011101":
+                    symbol = "1";
+                    break;
+                case "011100":
+                    symbol = "2";
+                    break;
+                case "011011":
+                    symbol = "3";
+                    break;
+                case "011010":
+                    symbol = "4";
+                    break;
+                case "011001":
+                    symbol = "5";
+                    break;
+                case "011000":
+                    symbol = "6";
+                    break;
+                case "010111":
+                    symbol = "7";
+                    break;
+                case "010110":
+                    symbol = "8";
+                    break;
+                case "010101":
+                    symbol = "9";
+                    break;
+                case "100100":
+                    symbol = " ";
+                    break;
+                case "100010":
+                    symbol = ",";
+                    break;
+                case "100011":
+                    symbol = ".";
+                    break;
+
+                default:
+                    throw new IllegalStateException("Error de decodificación");
+            }
+
+            return symbol;
+        }
+    }
+
+    private boolean ParityControl(String bitFrame){
+        int sum = 0;
+        for (int i = 0; i < bitFrame.length(); i++){
+            if (bitFrame.charAt(i) == '1') {
+                sum += 1;
+            } else {
+                continue;
+            }
+        }
+        if (sum % 2 == 1) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
 
     private int getRGBAverage(Bitmap bitmap){
         long redColor = 0;
