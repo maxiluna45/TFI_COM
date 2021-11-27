@@ -2,12 +2,15 @@ package com.example.tficom;
 
 import static com.example.tficom.BuildConfig.DEBUG;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.ColorUtils;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -200,9 +203,9 @@ public class Recepcion extends AppCompatActivity {
         String time = med.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION);
         int videoLenght = (Integer.parseInt(time)/1000);
         int frameNumber = videoLenght * 30;
-        ArrayList<Integer> bmRGB = new ArrayList<>();
-        int maxLuminance = 0;
-        int minLuminance = 0;
+        ArrayList<Float> bmRGB = new ArrayList<>();
+        float maxLuminance = 0;
+        float minLuminance = 1;
 
         // AV_FRAMECAPTURE
         /*for (long i = 1; i < frameNumber+1; i++)
@@ -221,18 +224,26 @@ public class Recepcion extends AppCompatActivity {
 
 
         // FFMPEG
+        boolean first = true;
         for(long i = 1; i < frameNumber+1; i++){
             int averageColor;
-            int luminance = 0;
+            float luminance = 0;
 
             Bitmap bmp = med.getFrameAtTime((i*33333), FFmpegMediaMetadataRetriever.OPTION_CLOSEST);
 
 
-            averageColor = getRGBAverage(bmp);
-            bmRGB.add(averageColor);
+            //averageColor = getRGBAverage(bmp);
+            averageColor = getRGBPixel(bmp);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 luminance = getRelativeLuminance(averageColor);
+                bmRGB.add(luminance);
+                if (first)
+                {
+                    maxLuminance = luminance;
+                    minLuminance = luminance;
+                    first = false;
+                }
                 if (luminance >= maxLuminance)
                     maxLuminance = luminance;
                 else if (luminance <= minLuminance)
@@ -244,18 +255,18 @@ public class Recepcion extends AppCompatActivity {
         getMsg(bmRGB, maxLuminance, minLuminance);
     }
 
-    private void getMsg(ArrayList<Integer> bmRGB, int maxLuminance, int minLuminance) {
+    private void getMsg(ArrayList<Float> bmRGB, float maxLuminance, float minLuminance) {
         boolean startFound = false;
         String[] start = new String[21];
         String startBits = "";
         int startPosition = 0;
         int firstMsgPosition = 0;
-        int averageLuminance = ((maxLuminance + minLuminance) / 2)/2;
+        float averageLuminance = ((maxLuminance + minLuminance) / 2)/2;
         for (int i = 0; i < bmRGB.size();i++)
         {
             if(!startFound)
             {
-                if(!start[20].equals(""))
+                if(start[20] == null)
                 {
                     start[i] = getWord(averageLuminance, bmRGB.get(i));
                 }
@@ -271,7 +282,7 @@ public class Recepcion extends AppCompatActivity {
                                 for(int k = 0; k < start.length; k++)
                                 {
                                     if(k == 20)
-                                        start[20] = "";
+                                        start[20] = null;
                                     else
                                         start[k] = start[k+1];
                                 }
@@ -294,9 +305,9 @@ public class Recepcion extends AppCompatActivity {
         }
     }
 
-    private String getWord(int averageLuminance, Integer integer) {
+    private String getWord(float averageLuminance, float luminance) {
 
-        if(integer < averageLuminance){
+        if(luminance < averageLuminance){
             return "0";
         } else{
             return "1";
@@ -491,34 +502,84 @@ public class Recepcion extends AppCompatActivity {
     }
 
 
-    private int getRGBAverage(Bitmap bitmap){
+    @ColorInt
+    private int getRGBPixel(Bitmap bm){
+        long redColor = 0;
+        long greenColor = 0;
+        long blueColor= 0;
+        int average = 0;
+
+        if (bm != null)
+        {
+            Bitmap bitmap = scaleDown(bm, 1,true);
+            int px = bitmap.getPixel(0, 0);
+            redColor = Color.red(px);
+            greenColor = Color.green(px);
+            blueColor = Color.blue(px);
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                average = Color.rgb(redColor, greenColor, blueColor);
+
+            }
+        }
+        return average;
+    }
+    @ColorInt
+    private int getRGBAverage(Bitmap bm){
         long redColor = 0;
         long greenColor = 0;
         long blueColor= 0;
         long pixelCount = 0;
         int average = 0;
 
-        for(int i = 0; i < bitmap.getHeight(); i++)
+        if (bm != null)
         {
-            for(int j = 0; j < bitmap.getWidth();j++)
+            Bitmap bitmap = scaleDown(bm, 500,true);
+            for(int i = 0; i < bitmap.getWidth(); i++)
             {
-                int px = bitmap.getPixel(i, j);
-                pixelCount ++;
-                redColor = Color.red(px);
-                greenColor = Color.green(px);
-                blueColor = Color.blue(px);
+                for(int j = 0; j < bitmap.getHeight();j++)
+                {
+                    int px = bitmap.getPixel(i, j);
+                    pixelCount ++;
+                    redColor = Color.red(px);
+                    greenColor = Color.green(px);
+                    blueColor = Color.blue(px);
+                }
             }
-        }
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            average = Color.rgb(redColor/pixelCount, greenColor/pixelCount, blueColor/pixelCount);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                float averageRed = (float)redColor/(float)pixelCount;
+                float averageGreen = (float)greenColor/(float)pixelCount;
+                float averageBlue = (float)blueColor/(float)pixelCount;
+                average = Color.rgb(averageRed, averageGreen, averageBlue);
 
+
+            }
         }
         return average;
     }
 
+    public static Bitmap scaleDown(Bitmap realImage, float maxImageSize,
+                                   boolean filter) {
+        float ratio = Math.min(
+                (float) maxImageSize / realImage.getWidth(),
+                (float) maxImageSize / realImage.getHeight());
+        int width = Math.round((float) ratio * realImage.getWidth());
+        int height = Math.round((float) ratio * realImage.getHeight());
+
+        Bitmap newBitmap = Bitmap.createScaledBitmap(realImage, width,
+                height, filter);
+        return newBitmap;
+    }
+
+    @SuppressLint("SupportAnnotationUsage")
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private int getRelativeLuminance(int number){
-        return (int) Color.luminance(number);
+    @ColorInt
+    private float getRelativeLuminance(int color){
+
+        return (float) ColorUtils.calculateLuminance(color);
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            return Color.luminance(color);
+        }*/
     }
 
     private void captureFrame(String VIDEO_FILE_PATH, long SNAPSHOT_DURATION_IN_MILLIS, int SNAPSHOT_WIDTH, int SNAPSHOT_HEIGHT) {
