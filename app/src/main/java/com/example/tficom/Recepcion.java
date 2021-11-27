@@ -326,10 +326,14 @@ public class Recepcion extends AppCompatActivity {
 
         }
         if (errorFlag){
-            //View(message);
+            viewMsg(message);
         } else {
             //RepeatAlert();
         }
+    }
+
+    private void viewMsg(String message){
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
     private String bitFrameDecodification(String bitFrame){
