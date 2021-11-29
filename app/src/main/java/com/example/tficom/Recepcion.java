@@ -232,8 +232,10 @@ public class Recepcion extends AppCompatActivity {
             Bitmap bmp = med.getFrameAtTime((i*33333), FFmpegMediaMetadataRetriever.OPTION_CLOSEST);
 
 
-            //averageColor = getRGBAverage(bmp);
-            averageColor = getRGBPixel(bmp);
+            averageColor = getRGBAverage(bmp);
+            //String hexColor = String.format("#%06X", (0xFFFFFF & averageColor));
+            //Log.i("Color",hexColor);
+            //averageColor = getRGBPixel(bmp);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 luminance = getRelativeLuminance(averageColor);
@@ -526,30 +528,30 @@ public class Recepcion extends AppCompatActivity {
     }
     @ColorInt
     private int getRGBAverage(Bitmap bm){
-        long redColor = 0;
-        long greenColor = 0;
-        long blueColor= 0;
-        long pixelCount = 0;
+        int redColor = 0;
+        int greenColor = 0;
+        int blueColor= 0;
+        int pixelCount = 0;
         int average = 0;
 
-        if (bm != null)
+        if (bm != null || ((bm.getHeight() > 0) && (bm.getWidth() > 0)))
         {
-            Bitmap bitmap = scaleDown(bm, 500,true);
+            Bitmap bitmap = scaleDown(bm, 10,true);
             for(int i = 0; i < bitmap.getWidth(); i++)
             {
                 for(int j = 0; j < bitmap.getHeight();j++)
                 {
                     int px = bitmap.getPixel(i, j);
                     pixelCount ++;
-                    redColor = Color.red(px);
-                    greenColor = Color.green(px);
-                    blueColor = Color.blue(px);
+                    redColor += Color.red(px);
+                    greenColor += Color.green(px);
+                    blueColor += Color.blue(px);
                 }
             }
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                float averageRed = (float)redColor/(float)pixelCount;
-                float averageGreen = (float)greenColor/(float)pixelCount;
-                float averageBlue = (float)blueColor/(float)pixelCount;
+                int averageRed = redColor/pixelCount;
+                int averageGreen = greenColor/pixelCount;
+                int averageBlue = blueColor/pixelCount;
                 average = Color.rgb(averageRed, averageGreen, averageBlue);
 
 
@@ -574,7 +576,7 @@ public class Recepcion extends AppCompatActivity {
     @SuppressLint("SupportAnnotationUsage")
     @RequiresApi(api = Build.VERSION_CODES.N)
     @ColorInt
-    private float getRelativeLuminance(int color){
+    private float getRelativeLuminance(@ColorInt int color){
 
         return (float) ColorUtils.calculateLuminance(color);
         /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
