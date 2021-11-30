@@ -249,7 +249,7 @@ public class Recepcion extends AppCompatActivity {
                 if (luminance >= maxLuminance)
                     maxLuminance = luminance;
                 else if (luminance <= minLuminance)
-                    maxLuminance = luminance;
+                    minLuminance = luminance;
             }
 
         }
@@ -263,14 +263,24 @@ public class Recepcion extends AppCompatActivity {
         String startBits = "";
         int startPosition = 0;
         int firstMsgPosition = 0;
-        float averageLuminance = ((maxLuminance + minLuminance) / 2)/2;
+        float averageLuminance = ((maxLuminance + minLuminance) / 2);
+        Log.i("ValorMax: ", String.valueOf(maxLuminance));
+        Log.i("ValorMin: ", String.valueOf(minLuminance));
+        Log.i("ValorPromedio", String.valueOf(averageLuminance));
         for (int i = 0; i < bmRGB.size();i++)
         {
             if(!startFound)
             {
                 if(start[20] == null)
                 {
-                    start[i] = getWord(averageLuminance, bmRGB.get(i));
+                    if(i < 20){
+                        start[i] = getWord(averageLuminance, bmRGB.get(i));
+                        Log.i("Valor: ", start[i]);
+                        Log.i("Luminancia: ", String.valueOf(bmRGB.get(i)));}
+                    else{
+                        start[20] = getWord(averageLuminance, bmRGB.get(i));
+                        Log.i("Valor: ", start[20]);
+                        Log.i("Luminancia: ", String.valueOf(bmRGB.get(i)));}
                 }
                 else
                     {
@@ -534,7 +544,7 @@ public class Recepcion extends AppCompatActivity {
         int pixelCount = 0;
         int average = 0;
 
-        if (bm != null || ((bm.getHeight() > 0) && (bm.getWidth() > 0)))
+        if (bm != null)
         {
             Bitmap bitmap = scaleDown(bm, 10,true);
             for(int i = 0; i < bitmap.getWidth(); i++)
