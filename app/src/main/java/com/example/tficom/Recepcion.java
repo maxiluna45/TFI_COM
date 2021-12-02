@@ -231,7 +231,7 @@ public class Recepcion extends AppCompatActivity {
 
             Bitmap bmp = med.getFrameAtTime((i*33333), FFmpegMediaMetadataRetriever.OPTION_CLOSEST);
 
-
+            saveImageToGallery(bmp);
             averageColor = getRGBAverage(bmp);
             //String hexColor = String.format("#%06X", (0xFFFFFF & averageColor));
             //Log.i("Color",hexColor);
@@ -253,9 +253,22 @@ public class Recepcion extends AppCompatActivity {
             }
 
         }
-
+        //imprimirFrames(bmRGB, maxLuminance, minLuminance);
         getMsg(bmRGB, maxLuminance, minLuminance);
     }
+
+    private void imprimirFrames(ArrayList<Float> bmRGB, float maxLuminance, float minLuminance){
+        float averageLuminance = ((maxLuminance + minLuminance) / 2);
+        Log.i("ValorMax: ", String.valueOf(maxLuminance));
+        Log.i("ValorMin: ", String.valueOf(minLuminance));
+        Log.i("ValorPromedio", String.valueOf(averageLuminance));
+        Log.i("Tamaño: ",String.valueOf(bmRGB.size()));
+        for (int i = 0; i < bmRGB.size();i++){
+            Log.i("Valor: ", getWord(averageLuminance, bmRGB.get(i)));
+            Log.i("Luminancia: ", String.valueOf(bmRGB.get(i)));
+        }
+    }
+
 
     private void getMsg(ArrayList<Float> bmRGB, float maxLuminance, float minLuminance) {
         boolean startFound = false;
@@ -267,6 +280,7 @@ public class Recepcion extends AppCompatActivity {
         Log.i("ValorMax: ", String.valueOf(maxLuminance));
         Log.i("ValorMin: ", String.valueOf(minLuminance));
         Log.i("ValorPromedio", String.valueOf(averageLuminance));
+        Log.i("Tamaño: ",String.valueOf(bmRGB.size()));
         for (int i = 0; i < bmRGB.size();i++)
         {
             if(!startFound)
