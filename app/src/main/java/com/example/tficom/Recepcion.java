@@ -171,7 +171,7 @@ public class Recepcion extends AppCompatActivity {
     {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*");
-        //startActivityForResult(intent,requestCode);
+        startActivityForResult(intent,requestCode);
     }
 
 
