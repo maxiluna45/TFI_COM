@@ -182,15 +182,6 @@ public class Recepcion extends AppCompatActivity {
 
 
 
-    public void loadVideo(Uri video, VideoView _videoView)
-    {
-        _videoView.setVideoURI(video);
-        MediaController mediaController = new MediaController(this);
-        _videoView.setMediaController(mediaController);
-        mediaController.setAnchorView(_videoView);
-        _videoView.start();
-    }
-
     public void iterateVideo(Uri uri, Context context) {
         // 1000000
         FFmpegMediaMetadataRetriever med = new FFmpegMediaMetadataRetriever();
@@ -198,8 +189,8 @@ public class Recepcion extends AppCompatActivity {
         //med.setDataSource(context, uri);
         //mee.setDataSource(context, uri);
         //String path = getPath(context, uri);
-
-        med.setDataSource(uri.toString());
+        med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/VID_20211201_205201.mp4");
+        //med.setDataSource(uri.toString());
         String time = med.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION);
         int videoLenght = (Integer.parseInt(time)/1000);
         int frameNumber = videoLenght * 30;
