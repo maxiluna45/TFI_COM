@@ -11,6 +11,7 @@ import androidx.core.graphics.ColorUtils;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -57,7 +58,7 @@ public class Recepcion extends AppCompatActivity {
 
     private AV_FrameCapture mFrameCapture = null;
     boolean USE_MEDIA_META_DATA_RETRIEVER = false;
-    //int requestCode = 1;
+    int requestCode = 1;
     private Uri fileUri;
     public static final int MEDIA_TYPE_VIDEO = 2;
     private static final int CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE = 200;
@@ -120,7 +121,7 @@ public class Recepcion extends AppCompatActivity {
     public void onActivityResult(int _requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(_requestCode, resultCode, data);
-        /* Context context = getApplicationContext();
+        Context context = getApplicationContext();
 
         if (_requestCode == requestCode && resultCode == Activity.RESULT_OK)
         {
@@ -130,21 +131,14 @@ public class Recepcion extends AppCompatActivity {
             }
             Uri uri = data.getData();
             String path = uri.getPath();
-            if(!path.contains("video"))
-            {
-                Toast.makeText(context,"Error, solo se pueden seleccionar videos",Toast.LENGTH_SHORT).show();
-            }
-            else{
-                    VideoView videoView = findViewById(R.id.videoView);
-                    Toast.makeText(context,uri.getPath(),Toast.LENGTH_SHORT).show();
-                    loadVideo(uri, videoView);
-                    // Recorrer frames
-                    iterateVideo(uri, context);
+            iterateVideo(uri,context);
+
+
 
                 }
-        }*/
+        }
         // After camera screen this code will excuted
-
+        /*
         if (_requestCode == CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE) {
 
             if (resultCode == RESULT_OK) {
@@ -166,10 +160,10 @@ public class Recepcion extends AppCompatActivity {
                         Toast.LENGTH_LONG).show();
             }
 
-            Uri path = data.getData();
-            iterateVideo(path, ActivityContext);
+            Uri uri = data.getData();
+            iterateVideo(uri, ActivityContext);
         }
-    }
+    }*/
 
 
 
