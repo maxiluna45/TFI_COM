@@ -1,7 +1,5 @@
 package com.example.tficom;
 
-import static com.example.tficom.BuildConfig.DEBUG;
-
 import androidx.annotation.ColorInt;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,13 +11,10 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.media.MediaMetadataRetriever;
@@ -28,26 +23,18 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
-import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.VideoView;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
@@ -189,6 +176,7 @@ public class Recepcion extends AppCompatActivity {
         int videoLenght = (Integer.parseInt(time)/1000);
         int frameNumber = videoLenght * 30;
         ArrayList<Float> bmRGB = new ArrayList<>();
+        ArrayList<String> bmBits = new ArrayList<>();
         float maxLuminance = 0;
         float minLuminance = 1;
 
@@ -239,7 +227,19 @@ public class Recepcion extends AppCompatActivity {
 
         }
         //imprimirFrames(bmRGB, maxLuminance, minLuminance);
-        getMsg(bmRGB, maxLuminance, minLuminance);
+        bmBits = getBits(bmRGB, maxLuminance, minLuminance);
+        getMsg(bmBits, maxLuminance, minLuminance);
+    }
+
+    private ArrayList<String> getBits(ArrayList<Float> bmRGB, float maxLuminance, float minLuminance) {
+        float averageLuminance = ((maxLuminance + minLuminance) / 2);
+        ArrayList<String> bmBits = new ArrayList<>();
+        for(int i=0; i < bmRGB.size();i++)
+        {
+            String bit = getWord(averageLuminance, bmRGB.get(i));
+            bmBits.add(bit);
+        }
+        return bmBits;
     }
 
     private void imprimirFrames(ArrayList<Float> bmRGB, float maxLuminance, float minLuminance){
@@ -255,65 +255,38 @@ public class Recepcion extends AppCompatActivity {
     }
 
 
-    private void getMsg(ArrayList<Float> bmRGB, float maxLuminance, float minLuminance) {
+    private void getMsg(ArrayList<String> bmBits, float maxLuminance, float minLuminance) {
         boolean startFound = false;
-        String[] start = new String[21];
-        String startBits = "";
         int startPosition = 0;
-        int firstMsgPosition = 0;
+        String bitSecuence = "";
         float averageLuminance = ((maxLuminance + minLuminance) / 2);
         Log.i("ValorMax: ", String.valueOf(maxLuminance));
         Log.i("ValorMin: ", String.valueOf(minLuminance));
         Log.i("ValorPromedio", String.valueOf(averageLuminance));
-        Log.i("Tamaño: ",String.valueOf(bmRGB.size()));
-        for (int i = 0; i < bmRGB.size();i++)
-        {
-            if(!startFound)
+        Log.i("Tamaño: ",String.valueOf(bmBits.size()));
+
+        startPosition = searchStart(bmBits);
+        if (startPosition!= -1) {
+            startFound = true;
+            for(int i = startPosition + 4; i < bmBits.size(); i+= 3)
             {
-                if(start[20] == null)
-                {
-                    if(i < 20){
-                        start[i] = getWord(averageLuminance, bmRGB.get(i));
-                        Log.i("Valor: ", start[i]);
-                        Log.i("Luminancia: ", String.valueOf(bmRGB.get(i)));}
-                    else{
-                        start[20] = getWord(averageLuminance, bmRGB.get(i));
-                        Log.i("Valor: ", start[20]);
-                        Log.i("Luminancia: ", String.valueOf(bmRGB.get(i)));}
-                }
-                else
-                    {
-                        startBits += start[0] + start[3] + start[6] + start[9] + start[12] + start[15] + start[18];
-                        if(startBits.equals("1000010")){
-                            startFound = true;
-                            startPosition = i;
-                        }
-                        else
-                            {
-                                for(int k = 0; k < start.length; k++)
-                                {
-                                    if(k == 20)
-                                        start[20] = null;
-                                    else
-                                        start[k] = start[k+1];
-                                }
-                            }
-                    }
-
-
+                bitSecuence += bmBits.get(i);
             }
-            else
-                {
-                    firstMsgPosition = startPosition+2;
-                    String msgBit = "";
-                    String bitSecuence = "";
-                    for (int k = firstMsgPosition; k < (bmRGB.size());k=k+3){
-                        msgBit = getWord(averageLuminance, bmRGB.get(k));
-                        bitSecuence += msgBit;
-                    }
-                    MsgDecodification((bitSecuence));
-                }
+            MsgDecodification((bitSecuence));
         }
+        else
+            Toast.makeText(this, "No se encontro el bit de start", Toast.LENGTH_SHORT).show();
+
+    }
+
+    private int searchStart(ArrayList<String> bmBits) {
+        for(int i = 0; i < bmBits.size() - 18;i++)
+        {
+            String start = bmBits.get(i) + bmBits.get(i+3) + bmBits.get(i+6) + bmBits.get(i+9) + bmBits.get(i+12) + bmBits.get(i+15) + bmBits.get(i+18);
+            if(start.equals("1000010"))
+                return i+18;
+        }
+        return -1;
     }
 
     private String getWord(float averageLuminance, float luminance) {
