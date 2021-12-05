@@ -170,7 +170,7 @@ public class Recepcion extends AppCompatActivity {
         //med.setDataSource(context, uri);
         //mee.setDataSource(context, uri);
         //String path = getPath(context, uri);
-        med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/VID_20211201_205201.mp4");
+        med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/VID_2021_90.mp4");
         //med.setDataSource(uri.toString());
         String time = med.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION);
         int videoLenght = (Integer.parseInt(time)/1000);
@@ -204,7 +204,7 @@ public class Recepcion extends AppCompatActivity {
 
             Bitmap bmp = med.getFrameAtTime((i*33333), FFmpegMediaMetadataRetriever.OPTION_CLOSEST);
 
-            saveImageToGallery(bmp);
+            //saveImageToGallery(bmp);
             averageColor = getRGBAverage(bmp);
             //String hexColor = String.format("#%06X", (0xFFFFFF & averageColor));
             //Log.i("Color",hexColor);
@@ -232,7 +232,7 @@ public class Recepcion extends AppCompatActivity {
     }
 
     private ArrayList<String> getBits(ArrayList<Float> bmRGB, float maxLuminance, float minLuminance) {
-        float averageLuminance = ((maxLuminance + minLuminance) / 2);
+        float averageLuminance = ((maxLuminance + minLuminance) / 4);
         ArrayList<String> bmBits = new ArrayList<>();
         for(int i=0; i < bmRGB.size();i++)
         {
@@ -259,11 +259,10 @@ public class Recepcion extends AppCompatActivity {
         boolean startFound = false;
         int startPosition = 0;
         String bitSecuence = "";
-        float averageLuminance = ((maxLuminance + minLuminance) / 2);
-        Log.i("ValorMax: ", String.valueOf(maxLuminance));
+        /*Log.i("ValorMax: ", String.valueOf(maxLuminance));
         Log.i("ValorMin: ", String.valueOf(minLuminance));
         Log.i("ValorPromedio", String.valueOf(averageLuminance));
-        Log.i("Tamaño: ",String.valueOf(bmBits.size()));
+        Log.i("Tamaño: ",String.valueOf(bmBits.size()));*/
 
         startPosition = searchStart(bmBits);
         if (startPosition!= -1) {
@@ -272,7 +271,9 @@ public class Recepcion extends AppCompatActivity {
             {
                 bitSecuence += bmBits.get(i);
             }
+            Log.i("Secuencia: ", bitSecuence);
             MsgDecodification((bitSecuence));
+
         }
         else
             Toast.makeText(this, "No se encontro el bit de start", Toast.LENGTH_SHORT).show();
@@ -320,7 +321,7 @@ public class Recepcion extends AppCompatActivity {
             }
 
         }
-        if (errorFlag){
+        if (!errorFlag){
             viewMsg(message);
         } else {
             //RepeatAlert();
@@ -486,28 +487,6 @@ public class Recepcion extends AppCompatActivity {
     }
 
 
-    @ColorInt
-    private int getRGBPixel(Bitmap bm){
-        long redColor = 0;
-        long greenColor = 0;
-        long blueColor= 0;
-        int average = 0;
-
-        if (bm != null)
-        {
-            Bitmap bitmap = scaleDown(bm, 1,true);
-            int px = bitmap.getPixel(0, 0);
-            redColor = Color.red(px);
-            greenColor = Color.green(px);
-            blueColor = Color.blue(px);
-
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                average = Color.rgb(redColor, greenColor, blueColor);
-
-            }
-        }
-        return average;
-    }
     @ColorInt
     private int getRGBAverage(Bitmap bm){
         int redColor = 0;

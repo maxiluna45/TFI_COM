@@ -325,7 +325,7 @@ public class Emision extends AppCompatActivity {
                 if (flashEncendido)
                     flashOff();
             try {
-                Thread.sleep(100);
+                Thread.sleep(110);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
