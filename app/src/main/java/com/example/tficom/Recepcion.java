@@ -321,6 +321,7 @@ public class Recepcion extends AppCompatActivity {
                 message += symbol;
                 count = 0;
                 bitFrame = "";
+                i -= 1;
             }
 
         }
