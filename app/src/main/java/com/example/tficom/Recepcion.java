@@ -170,7 +170,7 @@ public class Recepcion extends AppCompatActivity {
         //med.setDataSource(context, uri);
         //mee.setDataSource(context, uri);
         //String path = getPath(context, uri);
-        med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/VID_2021_90.mp4");
+        med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/98.mp4");
         //med.setDataSource(uri.toString());
         String time = med.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION);
         int videoLenght = (Integer.parseInt(time)/1000);
@@ -315,6 +315,9 @@ public class Recepcion extends AppCompatActivity {
                     errorFlag = true;
                     break;
                 }
+                if (symbol == "#"){
+                    break;
+                }
                 message += symbol;
                 count = 0;
                 bitFrame = "";
@@ -334,12 +337,12 @@ public class Recepcion extends AppCompatActivity {
 
     private String bitFrameDecodification(String bitFrame){
         boolean parity = ParityControl(bitFrame);
-        if (parity){
+        if (!parity){
             return "$";
         }
         else{
             String symbol;
-            switch (bitFrame.substring(0,5)) {
+            switch (bitFrame.substring(0,6)) {
 
                 case "111111":
                     symbol = "a";
@@ -460,6 +463,9 @@ public class Recepcion extends AppCompatActivity {
                     break;
                 case "100011":
                     symbol = ".";
+                    break;
+                case "100000":
+                    symbol = "#";
                     break;
 
                 default:
