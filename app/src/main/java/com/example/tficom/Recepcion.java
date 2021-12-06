@@ -43,7 +43,6 @@ import wseemann.media.FFmpegMediaMetadataRetriever;
 
 public class Recepcion extends AppCompatActivity {
 
-    private AV_FrameCapture mFrameCapture = null;
     boolean USE_MEDIA_META_DATA_RETRIEVER = false;
     int requestCode = 1;
     private Uri fileUri;
@@ -168,48 +167,32 @@ public class Recepcion extends AppCompatActivity {
         FFmpegMediaMetadataRetriever med = new FFmpegMediaMetadataRetriever();
         //MediaMetadataRetriever mee = new MediaMetadataRetriever();
         //med.setDataSource(context, uri);
-        //mee.setDataSource(context, uri);
         //String path = getPath(context, uri);
-        med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/98.mp4");
+        med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/VID_20211206_152144_hola.mp4");
         //med.setDataSource(uri.toString());
         String time = med.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION);
         int videoLenght = (Integer.parseInt(time)/1000);
         int frameNumber = videoLenght * 30;
         ArrayList<Float> bmRGB = new ArrayList<>();
-        ArrayList<String> bmBits = new ArrayList<>();
+        ArrayList<String> bmBits;
         float maxLuminance = 0;
         float minLuminance = 1;
-
-        // AV_FRAMECAPTURE
-        /*for (long i = 1; i < frameNumber+1; i++)
-        {
-            String path = getPath(context, uri);
-            captureFrame(path,(33*i),1920,1080);
-        }*/
-
-
-        // MEDIA METADATA RETRIEVER
-        /*for (long i = 1; i < frameNumber+1; i++)
-        {
-            Bitmap bmp = mee.getFrameAtTime((i*33333), MediaMetadataRetriever.OPTION_CLOSEST);
-            saveToInternalStorage(bmp);
-        }*/
 
 
         // FFMPEG
         boolean first = true;
+
+        // Recorre frame por frame el video, calcula el promedio rgb y su luminancia
+
         for(long i = 1; i < frameNumber+1; i++){
             int averageColor;
             float luminance = 0;
 
             Bitmap bmp = med.getFrameAtTime((i*33333), FFmpegMediaMetadataRetriever.OPTION_CLOSEST);
 
-            //saveImageToGallery(bmp);
             averageColor = getRGBAverage(bmp);
-            //String hexColor = String.format("#%06X", (0xFFFFFF & averageColor));
-            //Log.i("Color",hexColor);
-            //averageColor = getRGBPixel(bmp);
 
+            // Almacena el mayor y el menor valor de luminancia
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 luminance = getRelativeLuminance(averageColor);
                 bmRGB.add(luminance);
@@ -228,21 +211,30 @@ public class Recepcion extends AppCompatActivity {
         }
         //imprimirFrames(bmRGB, maxLuminance, minLuminance);
         bmBits = getBits(bmRGB, maxLuminance, minLuminance);
-        getMsg(bmBits, maxLuminance, minLuminance);
+        getMsg(bmBits);
     }
 
     private ArrayList<String> getBits(ArrayList<Float> bmRGB, float maxLuminance, float minLuminance) {
+
+        // Calcula la luminancia promedio, y transforma un vector de luminancias en un vector de bits
+
         float averageLuminance = ((maxLuminance + minLuminance) / 4);
+
         ArrayList<String> bmBits = new ArrayList<>();
+
         for(int i=0; i < bmRGB.size();i++)
         {
             String bit = getWord(averageLuminance, bmRGB.get(i));
             bmBits.add(bit);
         }
+
         return bmBits;
     }
 
     private void imprimirFrames(ArrayList<Float> bmRGB, float maxLuminance, float minLuminance){
+
+        // Funcion de testeo
+
         float averageLuminance = ((maxLuminance + minLuminance) / 2);
         Log.i("ValorMax: ", String.valueOf(maxLuminance));
         Log.i("ValorMin: ", String.valueOf(minLuminance));
@@ -255,7 +247,7 @@ public class Recepcion extends AppCompatActivity {
     }
 
 
-    private void getMsg(ArrayList<String> bmBits, float maxLuminance, float minLuminance) {
+    private void getMsg(ArrayList<String> bmBits) {
         boolean startFound = false;
         int startPosition = 0;
         String bitSecuence = "";
@@ -281,6 +273,9 @@ public class Recepcion extends AppCompatActivity {
     }
 
     private int searchStart(ArrayList<String> bmBits) {
+
+        // Dada una secuencia de bits, busca el caracter de start, y devuelve la posicion del ultimo bit de start
+
         for(int i = 0; i < bmBits.size() - 18;i++)
         {
             String start = bmBits.get(i) + bmBits.get(i+3) + bmBits.get(i+6) + bmBits.get(i+9) + bmBits.get(i+12) + bmBits.get(i+15) + bmBits.get(i+18);
@@ -292,6 +287,8 @@ public class Recepcion extends AppCompatActivity {
 
     private String getWord(float averageLuminance, float luminance) {
 
+        // Devuelve un 0 o un 1, si la luminancia pasada por parametro es menor o mayor al promedio, respectivamente
+
         if(luminance < averageLuminance){
             return "0";
         } else{
@@ -300,6 +297,9 @@ public class Recepcion extends AppCompatActivity {
     }
 
     private void MsgDecodification(String bitSecuence){
+
+        // Dada una secuencia de bits, lo separa entramas de 7 bits y las decodifica
+
         String bitFrame = "";
         String message = "";
         String symbol = "";
@@ -307,13 +307,19 @@ public class Recepcion extends AppCompatActivity {
         boolean errorFlag = false;
         for (int i = 0; i < bitSecuence.length(); i++){
             if (count < 7){
+
                 bitFrame += bitSecuence.charAt(i);
                 count += 1;
+
             } else {
+
                 symbol = bitFrameDecodification(bitFrame);
+
                 if (symbol == "$"){
+
                     errorFlag = true;
                     break;
+
                 }
                 if (symbol == "#"){
                     break;
@@ -336,7 +342,171 @@ public class Recepcion extends AppCompatActivity {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
+
+
+    private boolean ParityControl(String bitFrame){
+
+        // Realiza el control de paridad
+
+        int sum = 0;
+
+        for (int i = 0; i < bitFrame.length(); i++){
+            if (bitFrame.charAt(i) == '1') {
+                sum += 1;
+            } else {
+                continue;
+            }
+        }
+
+        if (sum % 2 == 1) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+
+    @ColorInt
+    private int getRGBAverage(Bitmap bm){
+
+        // Calcula el promedio rgb de un bitmap, y lo devuelve en formato Color INT
+
+        int redColor = 0;
+        int greenColor = 0;
+        int blueColor= 0;
+        int pixelCount = 0;
+        int average = 0;
+
+        if (bm != null)
+        {
+            Bitmap bitmap = scaleDown(bm, 10,true);
+            for(int i = 0; i < bitmap.getWidth(); i++)
+            {
+                for(int j = 0; j < bitmap.getHeight();j++)
+                {
+                    int px = bitmap.getPixel(i, j);
+                    pixelCount ++;
+                    redColor += Color.red(px);
+                    greenColor += Color.green(px);
+                    blueColor += Color.blue(px);
+                }
+            }
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                int averageRed = redColor/pixelCount;
+                int averageGreen = greenColor/pixelCount;
+                int averageBlue = blueColor/pixelCount;
+                average = Color.rgb(averageRed, averageGreen, averageBlue);
+
+
+            }
+        }
+        return average;
+    }
+
+    public static Bitmap scaleDown(Bitmap realImage, float maxImageSize,
+                                   boolean filter) {
+
+        // Reduce la resolucion de un bitmap
+
+        float ratio = Math.min(
+                (float) maxImageSize / realImage.getWidth(),
+                (float) maxImageSize / realImage.getHeight());
+        int width = Math.round((float) ratio * realImage.getWidth());
+        int height = Math.round((float) ratio * realImage.getHeight());
+
+        Bitmap newBitmap = Bitmap.createScaledBitmap(realImage, width,
+                height, filter);
+        return newBitmap;
+    }
+
+    @SuppressLint("SupportAnnotationUsage")
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    @ColorInt
+    private float getRelativeLuminance(@ColorInt int color){
+
+        // Funcion que, dado un Color Int devuelve su luminancia
+
+        return (float) ColorUtils.calculateLuminance(color);
+    }
+
+
+    public void grabar(View v) {
+        // Crea un nuevo Intent con un IntentAaction que puede ser enviado
+        // para hacer que la camara capture un video, y lo returne
+
+        // Estas siguientes lineas son para forzar el uso de la cámara y del almacenamiento interno
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
+
+        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+
+        // Se crea un archivo para guardar el video
+        fileUri = getOutputMediaFileUri(MEDIA_TYPE_VIDEO);
+
+        // Se incluye el nombre del archivo
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
+
+        // Se setea la calidad del video
+        intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
+
+        // Inicia el Intent para capturar el video
+        startActivityForResult(intent, CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE);
+    }
+
+    private void checkExternalStoragePermission() {
+
+        // Funcion de testeo, verifica los permisos de almacenamiento
+
+        int permissionCheck = ContextCompat.checkSelfPermission(
+                this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            Log.i("Mensaje", "No se tiene permiso para leer.");
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 225);
+        } else {
+            Log.i("Mensaje", "Se tiene permiso para leer!");
+        }
+    }
+
+    // Funcion para guardar un bitmap en la galeria como un jpeg
+    // No es necesaria, pero a fines de pruebas se incluye
+
+    private void saveImageToGallery(Bitmap bitmap){
+
+        OutputStream fos;
+
+        try{
+
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
+
+                ContentResolver resolver = getContentResolver();
+                ContentValues contentValues =  new ContentValues();
+                Random generator = new Random();
+                int n = 10000;
+                n = generator.nextInt(n);
+                contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, "Image_"+n + ".jpg");
+                contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg");
+                contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + File.separator + "TestFolder");
+                Uri imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+
+                fos = resolver.openOutputStream(Objects.requireNonNull(imageUri));
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                Objects.requireNonNull(fos);
+
+                //Toast.makeText(this, "Image Saved", Toast.LENGTH_SHORT).show();
+            }
+
+        }catch(Exception e){
+
+            Toast.makeText(this, "Image not saved \n" + e.toString(), Toast.LENGTH_SHORT).show();
+        }
+
+
+    }
+
     private String bitFrameDecodification(String bitFrame){
+
+        // Funcion que dada una trama, devuelve el simbolo que le corresponde
+
         boolean parity = ParityControl(bitFrame);
         if (!parity){
             return "$";
@@ -477,183 +647,7 @@ public class Recepcion extends AppCompatActivity {
         }
     }
 
-    private boolean ParityControl(String bitFrame){
-        int sum = 0;
-        for (int i = 0; i < bitFrame.length(); i++){
-            if (bitFrame.charAt(i) == '1') {
-                sum += 1;
-            } else {
-                continue;
-            }
-        }
-        if (sum % 2 == 1) {
-            return false;
-        } else {
-            return true;
-        }
-    }
 
-
-    @ColorInt
-    private int getRGBAverage(Bitmap bm){
-        int redColor = 0;
-        int greenColor = 0;
-        int blueColor= 0;
-        int pixelCount = 0;
-        int average = 0;
-
-        if (bm != null)
-        {
-            Bitmap bitmap = scaleDown(bm, 10,true);
-            for(int i = 0; i < bitmap.getWidth(); i++)
-            {
-                for(int j = 0; j < bitmap.getHeight();j++)
-                {
-                    int px = bitmap.getPixel(i, j);
-                    pixelCount ++;
-                    redColor += Color.red(px);
-                    greenColor += Color.green(px);
-                    blueColor += Color.blue(px);
-                }
-            }
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                int averageRed = redColor/pixelCount;
-                int averageGreen = greenColor/pixelCount;
-                int averageBlue = blueColor/pixelCount;
-                average = Color.rgb(averageRed, averageGreen, averageBlue);
-
-
-            }
-        }
-        return average;
-    }
-
-    public static Bitmap scaleDown(Bitmap realImage, float maxImageSize,
-                                   boolean filter) {
-        float ratio = Math.min(
-                (float) maxImageSize / realImage.getWidth(),
-                (float) maxImageSize / realImage.getHeight());
-        int width = Math.round((float) ratio * realImage.getWidth());
-        int height = Math.round((float) ratio * realImage.getHeight());
-
-        Bitmap newBitmap = Bitmap.createScaledBitmap(realImage, width,
-                height, filter);
-        return newBitmap;
-    }
-
-    @SuppressLint("SupportAnnotationUsage")
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    @ColorInt
-    private float getRelativeLuminance(@ColorInt int color){
-
-        return (float) ColorUtils.calculateLuminance(color);
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            return Color.luminance(color);
-        }*/
-    }
-
-    private void captureFrame(String VIDEO_FILE_PATH, long SNAPSHOT_DURATION_IN_MILLIS, int SNAPSHOT_WIDTH, int SNAPSHOT_HEIGHT) {
-
-        // getFrameAtTimeByMMDR & getFrameAtTimeByFrameCapture function uses a micro sec 1millisecond = 1000 microseconds
-
-        Bitmap bmp = USE_MEDIA_META_DATA_RETRIEVER ? getFrameAtTimeByMMDR(VIDEO_FILE_PATH, (SNAPSHOT_DURATION_IN_MILLIS * 1000))
-                : getFrameAtTimeByFrameCapture(VIDEO_FILE_PATH, (SNAPSHOT_DURATION_IN_MILLIS * 1000), SNAPSHOT_WIDTH, SNAPSHOT_HEIGHT);
-
-        String timeStamp = new SimpleDateFormat("ddMMyyyy_HHmmss", Locale.getDefault()).format(new Date());
-        if (null != bmp) {
-            AV_BitmapUtil.saveBitmap(bmp, String.format("/sdcard/read_%s.jpg", timeStamp));
-        }
-
-        if (mFrameCapture != null) {
-            mFrameCapture.release();
-        }
-    }
-
-    private Bitmap getFrameAtTimeByMMDR(String path, long time) {
-        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-        mmr.setDataSource(path);
-        Bitmap bmp = mmr.getFrameAtTime(time, MediaMetadataRetriever.OPTION_CLOSEST);
-        mmr.release();
-        return bmp;
-    }
-
-    private Bitmap getFrameAtTimeByFrameCapture(String path, long time, int snapshot_width, int snapshot_height) {
-        mFrameCapture = new AV_FrameCapture();
-        mFrameCapture.setDataSource(path);
-        mFrameCapture.setTargetSize(snapshot_width, snapshot_height);
-        mFrameCapture.init();
-        return mFrameCapture.getFrameAtTime(time);
-    }
-
-    public void grabar(View v) {
-        // Crea un nuevo Intent con un IntentAaction que puede ser enviado
-        // para hacer que la camara capture un video, y lo returne
-
-        // Estas siguientes lineas son para forzar el uso de la cámara y del almacenamiento interno
-        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
-        StrictMode.setVmPolicy(builder.build());
-
-        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-
-        // Se crea un archivo para guardar el video
-        fileUri = getOutputMediaFileUri(MEDIA_TYPE_VIDEO);
-
-        // Se incluye el nombre del archivo
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
-
-        // Se setea la calidad del video
-        intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
-
-        // Inicia el Intent para capturar el video
-        startActivityForResult(intent, CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE);
-    }
-
-    private void checkExternalStoragePermission() {
-        int permissionCheck = ContextCompat.checkSelfPermission(
-                this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-            Log.i("Mensaje", "No se tiene permiso para leer.");
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 225);
-        } else {
-            Log.i("Mensaje", "Se tiene permiso para leer!");
-        }
-    }
-
-    // Funcion para guardar un bitmap en la galeria como un jpeg
-    // No es necesaria, pero a fines de pruebas se incluye
-
-    private void saveImageToGallery(Bitmap bitmap){
-
-        OutputStream fos;
-
-        try{
-
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
-
-                ContentResolver resolver = getContentResolver();
-                ContentValues contentValues =  new ContentValues();
-                Random generator = new Random();
-                int n = 10000;
-                n = generator.nextInt(n);
-                contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, "Image_"+n + ".jpg");
-                contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg");
-                contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + File.separator + "TestFolder");
-                Uri imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
-
-                fos = resolver.openOutputStream(Objects.requireNonNull(imageUri));
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-                Objects.requireNonNull(fos);
-
-                //Toast.makeText(this, "Image Saved", Toast.LENGTH_SHORT).show();
-            }
-
-        }catch(Exception e){
-
-            Toast.makeText(this, "Image not saved \n" + e.toString(), Toast.LENGTH_SHORT).show();
-        }
-
-
-    }
 
 
 }
