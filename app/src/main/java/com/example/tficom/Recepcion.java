@@ -185,7 +185,7 @@ public class Recepcion extends AppCompatActivity {
         //MediaMetadataRetriever mee = new MediaMetadataRetriever();
         //med.setDataSource(context, uri);
         //String path = getPath(context, uri);
-        med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/98_low.mp4");
+        med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/VID_20211206_162043_hola_97.mp4");
         //med.setDataSource(uri.toString());
         String time = med.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION);
         int videoLenght = (Integer.parseInt(time)/1000);
@@ -305,8 +305,13 @@ public class Recepcion extends AppCompatActivity {
             MsgDecodification((bitSecuence));
 
         }
-        else
-            Toast.makeText(this, "No se encontro el bit de start", Toast.LENGTH_SHORT).show();
+        else {
+            Bundle objBundle = new Bundle();
+            objBundle.putString("MSG_KEY", "No se encontro el bit de start");
+            Message objMessage = new Message();
+            objMessage.setData(objBundle);
+            objHandler.sendMessage(objMessage);
+        }
 
     }
 
@@ -372,7 +377,11 @@ public class Recepcion extends AppCompatActivity {
         if (!errorFlag){
             viewMsg(message);
         } else {
-            //RepeatAlert();
+            Bundle objBundle = new Bundle();
+            objBundle.putString("MSG_KEY", "Error de paridad, uno o mas caracteres incorrectos");
+            Message objMessage = new Message();
+            objMessage.setData(objBundle);
+            objHandler.sendMessage(objMessage);
         }
     }
 
