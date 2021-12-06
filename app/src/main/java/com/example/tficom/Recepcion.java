@@ -1,6 +1,7 @@
 package com.example.tficom;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -22,6 +23,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -50,6 +53,20 @@ public class Recepcion extends AppCompatActivity {
     private static final int CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE = 200;
     public static Recepcion ActivityContext = null;
     public static TextView output;
+
+    Handler objHandler = new Handler()
+    {
+        @Override
+        public void handleMessage(@NonNull Message msg){
+            super.handleMessage(msg);
+            Bundle objBundle = msg.getData();
+            String message = objBundle.getString("MSG_KEY");
+
+            TextView text = (TextView) findViewById(R.id.output);
+            text.setText("Estado: "+message);
+        }
+
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -168,50 +185,71 @@ public class Recepcion extends AppCompatActivity {
         //MediaMetadataRetriever mee = new MediaMetadataRetriever();
         //med.setDataSource(context, uri);
         //String path = getPath(context, uri);
-        med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/VID_20211206_152144_hola.mp4");
+        med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/98_low.mp4");
         //med.setDataSource(uri.toString());
         String time = med.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION);
         int videoLenght = (Integer.parseInt(time)/1000);
         int frameNumber = videoLenght * 30;
         ArrayList<Float> bmRGB = new ArrayList<>();
-        ArrayList<String> bmBits;
-        float maxLuminance = 0;
-        float minLuminance = 1;
+        final float[] maxLuminance = {0};
+        final float[] minLuminance = {1};
 
 
         // FFMPEG
-        boolean first = true;
+        final boolean[] first = {true};
 
         // Recorre frame por frame el video, calcula el promedio rgb y su luminancia
+        // El proceso se ejecuta en un hilo secundario
+        Runnable objRunnable = new Runnable() {
+            Message objMessage = objHandler.obtainMessage();
+            Bundle objBundle = new Bundle();
 
-        for(long i = 1; i < frameNumber+1; i++){
-            int averageColor;
-            float luminance = 0;
+            @Override
+            public void run() {
 
-            Bitmap bmp = med.getFrameAtTime((i*33333), FFmpegMediaMetadataRetriever.OPTION_CLOSEST);
+                objBundle.putString("MSG_KEY", "Procesando...");
+                objMessage.setData(objBundle);
+                objHandler.sendMessage(objMessage);
 
-            averageColor = getRGBAverage(bmp);
+                ArrayList<String> bmBits;
 
-            // Almacena el mayor y el menor valor de luminancia
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                luminance = getRelativeLuminance(averageColor);
-                bmRGB.add(luminance);
-                if (first)
-                {
-                    maxLuminance = luminance;
-                    minLuminance = luminance;
-                    first = false;
+                for(long i = 1; i < frameNumber+1; i++){
+                    int averageColor;
+                    float luminance = 0;
+
+                    Bitmap bmp = med.getFrameAtTime((i*33333), FFmpegMediaMetadataRetriever.OPTION_CLOSEST);
+
+                    averageColor = getRGBAverage(bmp);
+
+                    // Almacena el mayor y el menor valor de luminancia
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        luminance = getRelativeLuminance(averageColor);
+                        bmRGB.add(luminance);
+                        if (first[0])
+                        {
+                            maxLuminance[0] = luminance;
+                            minLuminance[0] = luminance;
+                            first[0] = false;
+                        }
+                        if (luminance >= maxLuminance[0])
+                            maxLuminance[0] = luminance;
+                        else if (luminance <= minLuminance[0])
+                            minLuminance[0] = luminance;
+                    }
+
                 }
-                if (luminance >= maxLuminance)
-                    maxLuminance = luminance;
-                else if (luminance <= minLuminance)
-                    minLuminance = luminance;
-            }
+                //imprimirFrames(bmRGB, maxLuminance, minLuminance);
+                bmBits = getBits(bmRGB, maxLuminance[0], minLuminance[0]);
+                getMsg(bmBits);
 
-        }
-        //imprimirFrames(bmRGB, maxLuminance, minLuminance);
-        bmBits = getBits(bmRGB, maxLuminance, minLuminance);
-        getMsg(bmBits);
+
+
+            }
+        };
+        Thread objBgThread = new Thread(objRunnable);
+        objBgThread.start();
+
+
     }
 
     private ArrayList<String> getBits(ArrayList<Float> bmRGB, float maxLuminance, float minLuminance) {
@@ -339,6 +377,10 @@ public class Recepcion extends AppCompatActivity {
     }
 
     private void viewMsg(String message){
+
+        Intent i = new Intent(Recepcion.this,MessageView.class);
+        i.putExtra("Msg", message);
+        startActivity(i);
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
