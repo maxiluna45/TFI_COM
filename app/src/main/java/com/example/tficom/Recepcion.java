@@ -381,7 +381,7 @@ public class Recepcion extends AppCompatActivity {
         Intent i = new Intent(Recepcion.this,MessageView.class);
         i.putExtra("Msg", message);
         startActivity(i);
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
 

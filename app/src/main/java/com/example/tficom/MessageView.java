@@ -15,9 +15,9 @@ public class MessageView extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
 
         if (extras != null) {
-            String message = extras.getString("msg");
+            String message = extras.getString("Msg");
             TextView text = findViewById(R.id.msg);
-            text.setText(message);
+            text.setText("' "+message+" '");
 
             }
 
