@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.text.Normalizer;
 import java.util.concurrent.TimeUnit;
 
 public class Emision extends AppCompatActivity {
@@ -73,6 +74,8 @@ public class Emision extends AppCompatActivity {
         // Funcion que toma el mensaje escrito, luego de colocar enviar
         text = findViewById(R.id.edx_mensaje);
         mensaje = text.getText().toString().trim();
+        mensaje = Normalizer.normalize(mensaje, Normalizer.Form.NFD);
+        mensaje = mensaje.replaceAll("[^\\p{ASCII}]", "");
         transformMessage(mensaje);
     }
 
@@ -183,7 +186,7 @@ public class Emision extends AppCompatActivity {
                 if (flashEncendido)
                     flashOff();
             try {
-                Thread.sleep(98);
+                Thread.sleep(95);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

@@ -8,14 +8,13 @@
 
     <TextView
         android:id="@+id/titulo"
-        android:layout_width="250dp"
-        android:layout_height="87dp"
+        android:layout_width="235dp"
+        android:layout_height="76dp"
         android:layout_marginTop="128dp"
         android:fontFamily="sans-serif-black"
         android:text="EMISION"
-        android:textSize="60sp"
+        android:textSize="58sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -23,7 +22,6 @@
         android:id="@+id/edx_mensaje"
         android:layout_width="335dp"
         android:layout_height="53dp"
-        android:layout_marginBottom="280dp"
         android:ems="10"
         android:gravity="start|top"
         android:hint="Ingrese el mensaje"
@@ -32,16 +30,18 @@
         android:scrollbarAlwaysDrawVerticalTrack="true"
         android:scrollbars="vertical"
         android:singleLine="false"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/sendMsg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/titulo"
+        app:layout_constraintVertical_bias="0.882"
         tools:ignore="MissingConstraints" />
 
     <Button
         android:id="@+id/sendMsg"
         android:layout_width="158dp"
         android:layout_height="75dp"
-        android:layout_marginBottom="108dp"
+        android:layout_marginBottom="56dp"
         android:onClick="getMessage"
         android:text="Enviar"
         app:layout_constraintBottom_toBottomOf="parent"

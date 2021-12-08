@@ -32,9 +32,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.io.File;
 import java.io.OutputStream;
+import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -46,8 +46,9 @@ import wseemann.media.FFmpegMediaMetadataRetriever;
 
 public class Recepcion extends AppCompatActivity {
 
-    boolean USE_MEDIA_META_DATA_RETRIEVER = false;
-    int requestCode = 1;
+
+ 
+    //int requestCode = 1;
     private Uri fileUri;
     public static final int MEDIA_TYPE_VIDEO = 2;
     private static final int CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE = 200;
@@ -121,10 +122,12 @@ public class Recepcion extends AppCompatActivity {
     }
 
 
+
+
     public void onActivityResult(int _requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(_requestCode, resultCode, data);
-        Context context = getApplicationContext();
+        /*Context context = getApplicationContext();
 
         if (_requestCode == requestCode && resultCode == Activity.RESULT_OK)
         {
@@ -139,18 +142,23 @@ public class Recepcion extends AppCompatActivity {
 
 
                 }
-        }
+        }*/
         // After camera screen this code will excuted
-        /*
+
         if (_requestCode == CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE) {
 
             if (resultCode == RESULT_OK) {
 
-                output.setText("Video File : " +data.getData());
+                //output.setText("Video File : " +data.getData());
+                output.setText("Video File: " + fileUri);
 
                 // Video captured and saved to fileUri specified in the Intent
+                /*Toast.makeText(this, "Video saved to: " +
+                        data.getData(), Toast.LENGTH_LONG).show();*/
+
                 Toast.makeText(this, "Video saved to: " +
-                        data.getData(), Toast.LENGTH_LONG).show();
+                        fileUri, Toast.LENGTH_LONG).show();
+
             } else if (resultCode == RESULT_CANCELED) {
                 output.setText("User cancelled the video capture.");
                 // User cancelled the video capture
@@ -163,10 +171,10 @@ public class Recepcion extends AppCompatActivity {
                         Toast.LENGTH_LONG).show();
             }
 
-            Uri uri = data.getData();
-            iterateVideo(uri, ActivityContext);
+            //Uri uri = data.getData();
+            iterateVideo(fileUri, ActivityContext,true);
         }
-    }*/
+    }
 
 
 
@@ -174,19 +182,27 @@ public class Recepcion extends AppCompatActivity {
     {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*");
-        startActivityForResult(intent,requestCode);
+        iterateVideo(Uri.parse("xd"), this, false);
+        //startActivityForResult(intent,requestCode);
     }
 
 
 
-    public void iterateVideo(Uri uri, Context context) {
+    public void iterateVideo(Uri uri, Context context, Boolean record) {
         // 1000000
         FFmpegMediaMetadataRetriever med = new FFmpegMediaMetadataRetriever();
-        //MediaMetadataRetriever mee = new MediaMetadataRetriever();
         //med.setDataSource(context, uri);
         //String path = getPath(context, uri);
-        med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/VID_20211206_162043_hola_97.mp4");
-        //med.setDataSource(uri.toString());
+        
+        if(record)
+        {
+            med.setDataSource(uri.toString());
+        }else {
+            med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/98_low.mp4");
+        }
+
+
+        med.setDataSource(uri.toString());
         String time = med.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION);
         int videoLenght = (Integer.parseInt(time)/1000);
         int frameNumber = videoLenght * 30;
@@ -194,6 +210,7 @@ public class Recepcion extends AppCompatActivity {
         final float[] maxLuminance = {0};
         final float[] minLuminance = {1};
 
+        // Comprimir video
 
         // FFMPEG
         final boolean[] first = {true};
@@ -210,6 +227,7 @@ public class Recepcion extends AppCompatActivity {
                 objBundle.putString("MSG_KEY", "Procesando...");
                 objMessage.setData(objBundle);
                 objHandler.sendMessage(objMessage);
+
 
                 ArrayList<String> bmBits;
 
