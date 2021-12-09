@@ -590,10 +590,10 @@ public class Recepcion extends AppCompatActivity {
                 case "111110":
                     symbol = "b";
                     break;
-                case "111100":
+                case "111101":
                     symbol = "c";
                     break;
-                case "111101":
+                case "111100":
                     symbol = "d";
                     break;
                 case "111011":

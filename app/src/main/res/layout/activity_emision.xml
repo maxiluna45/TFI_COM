@@ -3,18 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/titulo"
-        android:layout_width="235dp"
+        android:layout_width="244dp"
         android:layout_height="76dp"
-        android:layout_marginTop="128dp"
+        android:layout_marginTop="52dp"
         android:fontFamily="sans-serif-black"
         android:text="EMISION"
-        android:textSize="58sp"
+        android:textSize="54sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -34,7 +34,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/titulo"
-        app:layout_constraintVertical_bias="0.882"
+        app:layout_constraintVertical_bias="0.935"
         tools:ignore="MissingConstraints" />
 
     <Button

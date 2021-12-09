@@ -10,31 +10,30 @@
         android:id="@+id/emision"
         android:layout_width="195dp"
         android:layout_height="73dp"
-        android:layout_marginBottom="48dp"
+        android:layout_marginBottom="20dp"
         android:onClick="sendView"
         android:text="Emision"
         app:layout_constraintBottom_toTopOf="@+id/recepcion"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.486"
+        app:layout_constraintHorizontal_bias="0.481"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/recepcion"
         android:layout_width="196dp"
         android:layout_height="73dp"
-        android:layout_marginBottom="212dp"
+        android:layout_marginBottom="140dp"
         android:onClick="openReception"
         android:text="Recepcion"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.483"
+        app:layout_constraintHorizontal_bias="0.479"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/titulo"
         android:layout_width="297dp"
         android:layout_height="95dp"
-        android:layout_marginTop="88dp"
         android:fontFamily="sans-serif-black"
         android:text="Sistema de Comunicacion Nocturno"
         android:textAppearance="@style/TextAppearance.AppCompat.Display2"
@@ -44,5 +43,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.187" />
 </androidx.constraintlayout.widget.ConstraintLayout>
