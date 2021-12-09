@@ -446,7 +446,9 @@ public class Recepcion extends AppCompatActivity {
         int pixelCount = 0;
         int average = 0;
 
-        if (bm != null)
+        Bitmap emptyBitmap = Bitmap.createBitmap(1920, 1080, Bitmap.Config.ARGB_8888);
+
+        if (bm != null && !bm.sameAs(emptyBitmap))
         {
             Bitmap bitmap = scaleDown(bm, 10,true);
             for(int i = 0; i < bitmap.getWidth(); i++)
@@ -468,6 +470,12 @@ public class Recepcion extends AppCompatActivity {
 
 
             }
+        } else{
+            Bundle objBundle = new Bundle();
+            objBundle.putString("MSG_KEY", "Se detecto un frame nulo, posible error en la grabacion");
+            Message objMessage = new Message();
+            objMessage.setData(objBundle);
+            objHandler.sendMessage(objMessage);
         }
         return average;
     }
@@ -516,7 +524,7 @@ public class Recepcion extends AppCompatActivity {
         intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
 
         // Se setea la calidad del video
-        intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
+        intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);
 
         // Inicia el Intent para capturar el video
         startActivityForResult(intent, CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE);
