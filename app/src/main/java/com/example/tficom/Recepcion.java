@@ -201,10 +201,10 @@ public class Recepcion extends AppCompatActivity {
             med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/Prueba.mp4");
         }*/
 
-        med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/VID_20211209_230454.mp4");
+        //med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/VID_20211210_195344.mp4");
 
 
-        //med.setDataSource(uri.toString());
+        med.setDataSource(uri.toString());
         String time = med.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION);
         int videoLenght = (Integer.parseInt(time)/1000);
         int frameNumber = videoLenght * 30;
@@ -306,8 +306,8 @@ public class Recepcion extends AppCompatActivity {
 
 
     private void getMsg(ArrayList<String> bmBits) {
-        boolean startFound = false;
         int startPosition = 0;
+        int newPosition;
         String bitSecuence = "";
         /*Log.i("ValorMax: ", String.valueOf(maxLuminance));
         Log.i("ValorMin: ", String.valueOf(minLuminance));
@@ -315,11 +315,23 @@ public class Recepcion extends AppCompatActivity {
         Log.i("Tamaño: ",String.valueOf(bmBits.size()));*/
 
         startPosition = searchStart(bmBits);
-        if (startPosition!= -1) {
-            startFound = true;
+        if (startPosition != -1) {
             for(int i = startPosition + 8; i < bmBits.size(); i+= 6)
             {
                 bitSecuence += bmBits.get(i);
+
+                if((bitSecuence.length() % 14) == 0){
+                    newPosition = checkSynchronism(bmBits, i);
+                    if(newPosition != -1)
+                        i = newPosition + 2;
+                    else{
+                        Bundle objBundle = new Bundle();
+                        objBundle.putString("MSG_KEY", "Error de sincronismo");
+                        Message objMessage = new Message();
+                        objMessage.setData(objBundle);
+                        objHandler.sendMessage(objMessage);
+                    }
+                }
             }
             Log.i("Secuencia: ", bitSecuence);
             MsgDecodification((bitSecuence));
@@ -333,6 +345,17 @@ public class Recepcion extends AppCompatActivity {
             objHandler.sendMessage(objMessage);
         }
 
+    }
+
+    private int checkSynchronism(ArrayList<String> bmBits, int actualPosition) {
+        for(int i = actualPosition; i < bmBits.size() - 36;i++)
+        {
+            String start = bmBits.get(i) + bmBits.get(i+6) + bmBits.get(i+12) + bmBits.get(i+18) + bmBits.get(i+24) +
+                    bmBits.get(i+30) + bmBits.get(i+36);
+            if(start.equals("1000010"))
+                return i+36;
+        }
+        return -1;
     }
 
     private int searchStart(ArrayList<String> bmBits) {
@@ -472,7 +495,12 @@ public class Recepcion extends AppCompatActivity {
 
                 }
             }}catch (Exception e){
-            Toast.makeText(Recepcion.this,"Bitmap vacio",Toast.LENGTH_SHORT);
+            //Toast.makeText(Recepcion.this,"Bitmap vacio",Toast.LENGTH_SHORT);
+            Bundle objBundle = new Bundle();
+            objBundle.putString("MSG_KEY", "Se detecto un frame vacio");
+            Message objMessage = new Message();
+            objMessage.setData(objBundle);
+            objHandler.sendMessage(objMessage);
         }
 
         return average;
@@ -522,7 +550,7 @@ public class Recepcion extends AppCompatActivity {
         intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
 
         // Se setea la calidad del video
-        intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0.2);
+        intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);
 
         // Inicia el Intent para capturar el video
         startActivityForResult(intent, CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE);
@@ -698,7 +726,7 @@ public class Recepcion extends AppCompatActivity {
                 case "010110":
                     symbol = "8";
                     break;
-                case "010101":
+                case "011111":
                     symbol = "9";
                     break;
                 case "100100":
@@ -715,7 +743,7 @@ public class Recepcion extends AppCompatActivity {
                     break;
 
                 default:
-                    throw new IllegalStateException("Error de decodificación");
+                    symbol = "$";
             }
 
             return symbol;

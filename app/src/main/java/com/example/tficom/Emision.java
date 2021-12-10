@@ -34,7 +34,7 @@ public class Emision extends AppCompatActivity {
     boolean flashEncendido = false;
     EditText text;
     String mensaje;
-    int bitTime = 195;
+    int bitTime = 194;
 
 
     @Override
@@ -46,6 +46,10 @@ public class Emision extends AppCompatActivity {
 
         // Llama al administrador de paquetes para preguntar si el celular tiene flash
         // Si no tiene, envía un aviso
+
+        EditText time = (EditText)findViewById(R.id.bitTime);
+        time.setText(String.valueOf(bitTime));
+
 
         hasFlash = getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
         if (hasFlash) {
@@ -111,14 +115,18 @@ public class Emision extends AppCompatActivity {
 
     public void transformMessage(String message) {
         // Transformar mensaje de texto a codigo
-
+        int counter = 0;
         String nuevo = "1000010"; // Añado caracter START
 
         for (int i = 0; i < message.length(); i++) {
             Character letra = message.charAt(i);
             if(validateChar(letra))
             {
+                counter ++;
                 nuevo += codificarChar(letra);
+                if(((counter % 2) == 0) && counter != 0){
+                    nuevo += "1000010";
+                }
             }
             else {
                     Toast.makeText(Emision.this, "Se ingreso un caracter invalido", Toast.LENGTH_SHORT).show();
@@ -381,7 +389,7 @@ public class Emision extends AppCompatActivity {
                 charCodificado = "010110";
                 break;
             case '9':
-                charCodificado = "010101";
+                charCodificado = "011111";
                 break;
             case ' ':
                 charCodificado = "100100";
