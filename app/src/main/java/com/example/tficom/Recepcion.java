@@ -450,7 +450,7 @@ public class Recepcion extends AppCompatActivity {
         int average = 0;
 
         //Bitmap emptyBitmap = Bitmap.createBitmap(1920, 1080, Bitmap.Config.ARGB_8888);
-
+        try{
         if (bm != null){
                 Bitmap bitmap = scaleDown(bm, 10,true);
                 for(int i = 0; i < bitmap.getWidth(); i++)
@@ -471,7 +471,9 @@ public class Recepcion extends AppCompatActivity {
                     average = Color.rgb(averageRed, averageGreen, averageBlue);
 
                 }
-            }
+            }}catch (Exception e){
+            Toast.makeText(Recepcion.this,"Bitmap vacio",Toast.LENGTH_SHORT);
+        }
 
         return average;
     }
