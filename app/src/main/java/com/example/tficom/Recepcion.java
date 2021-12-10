@@ -172,7 +172,7 @@ public class Recepcion extends AppCompatActivity {
             }
 
             //Uri uri = data.getData();
-            iterateVideo(fileUri, ActivityContext,true);
+            iterateVideo(fileUri, ActivityContext,false);
         }
     }
 
@@ -194,15 +194,17 @@ public class Recepcion extends AppCompatActivity {
         //med.setDataSource(context, uri);
         //String path = getPath(context, uri);
         
-        if(record)
+        /*if(record)
         {
             med.setDataSource(uri.toString());
         }else {
-            med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/98_low.mp4");
-        }
+            med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/Prueba.mp4");
+        }*/
+
+        med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/VID_20211209_223129.mp4");
 
 
-        med.setDataSource(uri.toString());
+        //med.setDataSource(uri.toString());
         String time = med.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION);
         int videoLenght = (Integer.parseInt(time)/1000);
         int frameNumber = videoLenght * 30;
@@ -256,7 +258,7 @@ public class Recepcion extends AppCompatActivity {
                     }
 
                 }
-                //imprimirFrames(bmRGB, maxLuminance, minLuminance);
+                //imprimirFrames(bmRGB, maxLuminance[0], minLuminance[0]);
                 bmBits = getBits(bmRGB, maxLuminance[0], minLuminance[0]);
                 getMsg(bmBits);
 
@@ -291,7 +293,7 @@ public class Recepcion extends AppCompatActivity {
 
         // Funcion de testeo
 
-        float averageLuminance = ((maxLuminance + minLuminance) / 2);
+        float averageLuminance = ((maxLuminance + minLuminance) / 4);
         Log.i("ValorMax: ", String.valueOf(maxLuminance));
         Log.i("ValorMin: ", String.valueOf(minLuminance));
         Log.i("ValorPromedio", String.valueOf(averageLuminance));
@@ -446,37 +448,30 @@ public class Recepcion extends AppCompatActivity {
         int pixelCount = 0;
         int average = 0;
 
-        Bitmap emptyBitmap = Bitmap.createBitmap(1920, 1080, Bitmap.Config.ARGB_8888);
+        //Bitmap emptyBitmap = Bitmap.createBitmap(1920, 1080, Bitmap.Config.ARGB_8888);
 
-        if (bm != null && !bm.sameAs(emptyBitmap))
-        {
-            Bitmap bitmap = scaleDown(bm, 10,true);
-            for(int i = 0; i < bitmap.getWidth(); i++)
-            {
-                for(int j = 0; j < bitmap.getHeight();j++)
+        if (bm != null){
+                Bitmap bitmap = scaleDown(bm, 10,true);
+                for(int i = 0; i < bitmap.getWidth(); i++)
                 {
-                    int px = bitmap.getPixel(i, j);
-                    pixelCount ++;
-                    redColor += Color.red(px);
-                    greenColor += Color.green(px);
-                    blueColor += Color.blue(px);
+                    for(int j = 0; j < bitmap.getHeight();j++)
+                    {
+                        int px = bitmap.getPixel(i, j);
+                        pixelCount ++;
+                        redColor += Color.red(px);
+                        greenColor += Color.green(px);
+                        blueColor += Color.blue(px);
+                    }
+                }
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    int averageRed = redColor/pixelCount;
+                    int averageGreen = greenColor/pixelCount;
+                    int averageBlue = blueColor/pixelCount;
+                    average = Color.rgb(averageRed, averageGreen, averageBlue);
+
                 }
             }
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                int averageRed = redColor/pixelCount;
-                int averageGreen = greenColor/pixelCount;
-                int averageBlue = blueColor/pixelCount;
-                average = Color.rgb(averageRed, averageGreen, averageBlue);
 
-
-            }
-        } else{
-            Bundle objBundle = new Bundle();
-            objBundle.putString("MSG_KEY", "Se detecto un frame nulo, posible error en la grabacion");
-            Message objMessage = new Message();
-            objMessage.setData(objBundle);
-            objHandler.sendMessage(objMessage);
-        }
         return average;
     }
 
@@ -524,7 +519,7 @@ public class Recepcion extends AppCompatActivity {
         intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
 
         // Se setea la calidad del video
-        intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);
+        intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0.2);
 
         // Inicia el Intent para capturar el video
         startActivityForResult(intent, CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE);
