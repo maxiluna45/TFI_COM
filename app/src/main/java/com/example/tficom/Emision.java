@@ -34,6 +34,7 @@ public class Emision extends AppCompatActivity {
     boolean flashEncendido = false;
     EditText text;
     String mensaje;
+    int bitTime = 195;
 
 
     @Override
@@ -248,7 +249,7 @@ public class Emision extends AppCompatActivity {
                 if (flashEncendido)
                     flashOff();
             try {
-                Thread.sleep(195);
+                Thread.sleep(bitTime);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -258,6 +259,11 @@ public class Emision extends AppCompatActivity {
         if (flashEncendido)
             flashOff();
 ;
+    }
+
+    public void changeBitTime(View view){
+        EditText time = (EditText)findViewById(R.id.bitTime);
+        bitTime = Integer.parseInt(time.getText().toString());
     }
 
     public String codificarChar(Character letra) {
