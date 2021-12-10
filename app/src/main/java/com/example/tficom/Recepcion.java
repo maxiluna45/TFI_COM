@@ -201,7 +201,7 @@ public class Recepcion extends AppCompatActivity {
             med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/Prueba.mp4");
         }*/
 
-        med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/VID_20211209_223129.mp4");
+        med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/VID_20211209_230454.mp4");
 
 
         //med.setDataSource(uri.toString());
@@ -317,7 +317,7 @@ public class Recepcion extends AppCompatActivity {
         startPosition = searchStart(bmBits);
         if (startPosition!= -1) {
             startFound = true;
-            for(int i = startPosition + 4; i < bmBits.size(); i+= 3)
+            for(int i = startPosition + 8; i < bmBits.size(); i+= 6)
             {
                 bitSecuence += bmBits.get(i);
             }
@@ -339,11 +339,12 @@ public class Recepcion extends AppCompatActivity {
 
         // Dada una secuencia de bits, busca el caracter de start, y devuelve la posicion del ultimo bit de start
 
-        for(int i = 0; i < bmBits.size() - 18;i++)
+        for(int i = 0; i < bmBits.size() - 36;i++)
         {
-            String start = bmBits.get(i) + bmBits.get(i+3) + bmBits.get(i+6) + bmBits.get(i+9) + bmBits.get(i+12) + bmBits.get(i+15) + bmBits.get(i+18);
+            String start = bmBits.get(i) + bmBits.get(i+6) + bmBits.get(i+12) + bmBits.get(i+18) + bmBits.get(i+24) +
+                    bmBits.get(i+30) + bmBits.get(i+36);
             if(start.equals("1000010"))
-                return i+18;
+                return i+36;
         }
         return -1;
     }
