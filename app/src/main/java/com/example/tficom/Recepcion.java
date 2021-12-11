@@ -422,7 +422,11 @@ public class Recepcion extends AppCompatActivity {
                 if (symbol == "$"){
 
                     errorFlag = true;
-                    break;
+                    message += "*";
+                    count = 0;
+                    bitFrame = "";
+                    i -= 1;
+                    continue;
 
                 }
                 if (symbol == "#"){
@@ -443,6 +447,7 @@ public class Recepcion extends AppCompatActivity {
             Message objMessage = new Message();
             objMessage.setData(objBundle);
             objHandler.sendMessage(objMessage);
+            viewMsg(message);
         }
     }
 
