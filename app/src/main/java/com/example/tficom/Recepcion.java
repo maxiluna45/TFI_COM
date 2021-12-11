@@ -439,24 +439,20 @@ public class Recepcion extends AppCompatActivity {
             }
 
         }
-        if (!errorFlag){
-            viewMsg(message);
-        } else {
-            Bundle objBundle = new Bundle();
-            objBundle.putString("MSG_KEY", "Error de paridad, uno o mas caracteres incorrectos");
-            Message objMessage = new Message();
-            objMessage.setData(objBundle);
-            objHandler.sendMessage(objMessage);
-            viewMsg(message);
-        }
+
+        viewMsg(message, errorFlag);
     }
 
-    private void viewMsg(String message){
+    private void viewMsg(String message, boolean errorFlag){
 
         Intent i = new Intent(Recepcion.this,MessageView.class);
         i.putExtra("Msg", message);
         startActivity(i);
+        if (errorFlag){
+            Toast.makeText(Recepcion.this,"Existen errores de paridad en uno o más caracteres, se mostrarán con '*'",Toast.LENGTH_SHORT);
+        }
         //Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+
     }
 
 
