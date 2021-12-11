@@ -1,5 +1,6 @@
 package com.example.tficom;
 
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -20,6 +21,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -33,6 +35,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.io.File;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
@@ -44,16 +47,19 @@ import java.util.Random;
 
 import wseemann.media.FFmpegMediaMetadataRetriever;
 
+
 public class Recepcion extends AppCompatActivity {
 
 
  
     //int requestCode = 1;
     private Uri fileUri;
+    private static File mediaFileVideo;
     public static final int MEDIA_TYPE_VIDEO = 2;
     private static final int CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE = 200;
     public static Recepcion ActivityContext = null;
     public static TextView output;
+
 
     Handler objHandler = new Handler()
     {
@@ -118,6 +124,7 @@ public class Recepcion extends AppCompatActivity {
         } else {
             return null;
         }
+        mediaFileVideo = mediaFile;
         return mediaFile;
     }
 
@@ -156,24 +163,38 @@ public class Recepcion extends AppCompatActivity {
                 /*Toast.makeText(this, "Video saved to: " +
                         data.getData(), Toast.LENGTH_LONG).show();*/
 
-                Toast.makeText(this, "Video saved to: " +
+                Toast.makeText(this, "Video almacenado en: " +
                         fileUri, Toast.LENGTH_LONG).show();
 
             } else if (resultCode == RESULT_CANCELED) {
                 output.setText("User cancelled the video capture.");
                 // User cancelled the video capture
-                Toast.makeText(this, "User cancelled the video capture.",
+                Toast.makeText(this, "El usuario cancelo la captura del video",
                         Toast.LENGTH_LONG).show();
             } else {
                 output.setText("Video capture failed.");
                 // Video capture failed, advise user
-                Toast.makeText(this, "Video capture failed.",
+                Toast.makeText(this, "La captura de video fallo",
                         Toast.LENGTH_LONG).show();
+
             }
+            /*
+            try{
+                mediaFileVideo.createNewFile();
+            } catch (IOException e){
+                e.printStackTrace();
+            }*/
+
+            TextView text = (TextView) findViewById(R.id.output);
+            text.setText("Estado: Video Cargado");
 
             //Uri uri = data.getData();
-            iterateVideo(fileUri, ActivityContext,false);
+            //iterateVideo(fileUri, ActivityContext,false);
         }
+    }
+
+    public void processVideo(View view){
+        iterateVideo(fileUri);
     }
 
 
@@ -182,37 +203,32 @@ public class Recepcion extends AppCompatActivity {
     {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*");
-        iterateVideo(Uri.parse("xd"), this, false);
+        iterateVideo(Uri.parse("xd"));
         //startActivityForResult(intent,requestCode);
     }
 
 
 
-    public void iterateVideo(Uri uri, Context context, Boolean record) {
+    public void iterateVideo(Uri uri) {
         // 1000000
         FFmpegMediaMetadataRetriever med = new FFmpegMediaMetadataRetriever();
         //med.setDataSource(context, uri);
         //String path = getPath(context, uri);
-        
-        /*if(record)
-        {
-            med.setDataSource(uri.toString());
-        }else {
-            med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/Prueba.mp4");
-        }*/
 
-        //med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/VID_20211210_195344.mp4");
+
+        //med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/VideoXD.mp4");
 
 
         med.setDataSource(uri.toString());
+
+
+
         String time = med.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION);
         int videoLenght = (Integer.parseInt(time)/1000);
         int frameNumber = videoLenght * 30;
         ArrayList<Float> bmRGB = new ArrayList<>();
         final float[] maxLuminance = {0};
         final float[] minLuminance = {1};
-
-        // Comprimir video
 
         // FFMPEG
         final boolean[] first = {true};
@@ -271,6 +287,7 @@ public class Recepcion extends AppCompatActivity {
 
 
     }
+
 
     private ArrayList<String> getBits(ArrayList<Float> bmRGB, float maxLuminance, float minLuminance) {
 
@@ -554,6 +571,7 @@ public class Recepcion extends AppCompatActivity {
 
         // Inicia el Intent para capturar el video
         startActivityForResult(intent, CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE);
+
     }
 
     private void checkExternalStoragePermission() {
@@ -751,6 +769,5 @@ public class Recepcion extends AppCompatActivity {
     }
 
 
-
-
 }
+

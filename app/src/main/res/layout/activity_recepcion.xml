@@ -18,7 +18,7 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/titulo2"
-        app:layout_constraintVertical_bias="0.677" />
+        app:layout_constraintVertical_bias="0.299" />
 
     <TextView
         android:id="@+id/titulo2"
@@ -37,7 +37,7 @@
         android:id="@+id/btn_grabar"
         android:layout_width="158dp"
         android:layout_height="54dp"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="48dp"
         android:onClick="grabar"
         android:text="Grabar"
         app:layout_constraintEnd_toEndOf="parent"
@@ -57,5 +57,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.81" />
+
+    <Button
+        android:id="@+id/todo"
+        android:layout_width="105dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="52dp"
+        android:onClick="processVideo"
+        android:text="PROCESAR"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_grabar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

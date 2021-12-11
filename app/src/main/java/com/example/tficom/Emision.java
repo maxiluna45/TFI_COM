@@ -41,8 +41,6 @@ public class Emision extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_emision);
-        Intent intent = getIntent();
-
 
         // Llama al administrador de paquetes para preguntar si el celular tiene flash
         // Si no tiene, envía un aviso
@@ -110,7 +108,12 @@ public class Emision extends AppCompatActivity {
         mensaje = text.getText().toString().trim();
         mensaje = Normalizer.normalize(mensaje, Normalizer.Form.NFD);
         mensaje = mensaje.replaceAll("[^\\p{ASCII}]", "");
-        transformMessage(mensaje);
+
+        if (!mensaje.matches("^[a-z0-9_,.?]+$")) {
+            Toast.makeText(Emision.this, "Se ingreso un caracter invalido", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            transformMessage(mensaje);}
     }
 
     public void transformMessage(String message) {
@@ -120,20 +123,13 @@ public class Emision extends AppCompatActivity {
 
         for (int i = 0; i < message.length(); i++) {
             Character letra = message.charAt(i);
-            if(validateChar(letra))
-            {
-                counter ++;
-                nuevo += codificarChar(letra);
-                if(((counter % 2) == 0) && counter != 0){
-                    nuevo += "1000010";
-                }
-            }
-            else {
-                    Toast.makeText(Emision.this, "Se ingreso un caracter invalido", Toast.LENGTH_SHORT).show();
-                    Intent i2 = new Intent(Emision.this,MainActivity.class);
-                    startActivity(i2);
-                }
 
+            counter ++;
+            nuevo += codificarChar(letra);
+            if(((counter % 2) == 0) && counter != 0){
+                nuevo += "1000010";
+
+            }
 
         }
 
