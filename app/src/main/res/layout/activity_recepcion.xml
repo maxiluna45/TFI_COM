@@ -6,20 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".Recepcion">
 
-    <Button
-        android:id="@+id/btn_cargar"
-        android:layout_width="142dp"
-        android:layout_height="64dp"
-        android:layout_marginBottom="328dp"
-        android:onClick="OpenFileChooser"
-        android:text="Cargar Video"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/titulo2"
-        app:layout_constraintVertical_bias="0.299" />
-
     <TextView
         android:id="@+id/titulo2"
         android:layout_width="338dp"
@@ -37,13 +23,13 @@
         android:id="@+id/btn_grabar"
         android:layout_width="158dp"
         android:layout_height="54dp"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="240dp"
         android:onClick="grabar"
         android:text="Grabar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_cargar" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/output"
@@ -60,14 +46,17 @@
 
     <Button
         android:id="@+id/todo"
-        android:layout_width="105dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="52dp"
+        android:layout_width="158dp"
+        android:layout_height="54dp"
+        android:layout_marginTop="60dp"
         android:onClick="processVideo"
         android:text="PROCESAR"
         android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_grabar" />
+        app:layout_constraintTop_toBottomOf="@+id/btn_grabar"
+        app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

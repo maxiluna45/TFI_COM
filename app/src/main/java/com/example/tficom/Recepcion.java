@@ -50,9 +50,6 @@ import wseemann.media.FFmpegMediaMetadataRetriever;
 
 public class Recepcion extends AppCompatActivity {
 
-
- 
-    //int requestCode = 1;
     private Uri fileUri;
     private static File mediaFileVideo;
     public static final int MEDIA_TYPE_VIDEO = 2;
@@ -134,22 +131,7 @@ public class Recepcion extends AppCompatActivity {
     public void onActivityResult(int _requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(_requestCode, resultCode, data);
-        /*Context context = getApplicationContext();
 
-        if (_requestCode == requestCode && resultCode == Activity.RESULT_OK)
-        {
-            if (data == null)
-            {
-                return;
-            }
-            Uri uri = data.getData();
-            String path = uri.getPath();
-            iterateVideo(uri,context);
-
-
-
-                }
-        }*/
         // After camera screen this code will excuted
 
         if (_requestCode == CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE) {
@@ -196,17 +178,6 @@ public class Recepcion extends AppCompatActivity {
     public void processVideo(View view){
         iterateVideo(fileUri);
     }
-
-
-
-    public void OpenFileChooser(View view)
-    {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("*/*");
-        iterateVideo(Uri.parse("xd"));
-        //startActivityForResult(intent,requestCode);
-    }
-
 
 
     public void iterateVideo(Uri uri) {
@@ -326,10 +297,6 @@ public class Recepcion extends AppCompatActivity {
         int startPosition = 0;
         int newPosition;
         String bitSecuence = "";
-        /*Log.i("ValorMax: ", String.valueOf(maxLuminance));
-        Log.i("ValorMin: ", String.valueOf(minLuminance));
-        Log.i("ValorPromedio", String.valueOf(averageLuminance));
-        Log.i("Tamaño: ",String.valueOf(bmBits.size()));*/
 
         startPosition = searchStart(bmBits);
         if (startPosition != -1) {
