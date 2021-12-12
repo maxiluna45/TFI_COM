@@ -8,14 +8,15 @@
 
     <TextView
         android:id="@+id/titulo2"
-        android:layout_width="338dp"
-        android:layout_height="85dp"
+        android:layout_width="411dp"
+        android:layout_height="62dp"
         android:layout_marginTop="40dp"
         android:fontFamily="sans-serif-black"
         android:text="RECEPCION"
-        android:textSize="60sp"
+        android:textAlignment="center"
+        android:textSize="48sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.493"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -51,7 +52,7 @@
         android:layout_marginTop="60dp"
         android:onClick="processVideo"
         android:text="PROCESAR"
-        android:textSize="12sp"
+        android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

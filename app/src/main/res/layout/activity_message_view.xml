@@ -8,10 +8,11 @@
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="232dp"
-        android:layout_height="67dp"
+        android:layout_width="394dp"
+        android:layout_height="66dp"
         android:layout_marginTop="72dp"
         android:text="MENSAJE"
+        android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
         android:textSize="48sp"
         android:textStyle="bold"
