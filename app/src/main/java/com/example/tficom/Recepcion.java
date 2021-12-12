@@ -1,6 +1,5 @@
 package com.example.tficom;
 
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -8,20 +7,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.media.MediaMetadataRetriever;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -35,16 +29,13 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.io.File;
-import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
-
 import wseemann.media.FFmpegMediaMetadataRetriever;
 
 
@@ -81,7 +72,7 @@ public class Recepcion extends AppCompatActivity {
         ActivityContext = this;
         Button btn_grabar = (Button)findViewById(R.id.btn_grabar);
         output = (TextView)findViewById(R.id.output);
-        checkExternalStoragePermission();
+        //checkExternalStoragePermission();
 
     }
 
@@ -91,31 +82,30 @@ public class Recepcion extends AppCompatActivity {
         return Uri.fromFile(getOutputMediaFile(type));
     }
 
-    /** Create a File for saving an image or video */
+    /** Crea un File para guardar el video */
     private static File getOutputMediaFile(int type){
 
-        // Check that the SDCard is mounted
+        // Crea un objeto tipo File, con la ruta /Storage/Pictures/MyCameraVideo
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "MyCameraVideo");
-        // Create the storage directory(MyCameraVideo) if it does not exist
+        // Chequea si existe dicho directorio, caso contrario, lo crea
         if (! mediaStorageDir.exists()){
             if (! mediaStorageDir.mkdirs()){
-                output.setText("Failed to create directory MyCameraVideo.");
-                Toast.makeText(ActivityContext, "Failed to create directory MyCameraVideo.",
+                Toast.makeText(ActivityContext, "Error al crear el directorio MyCameraVideo.",
                         Toast.LENGTH_LONG).show();
-                Log.d("MyCameraVideo", "Failed to create directory MyCameraVideo.");
+                Log.d("MyCameraVideo", "Error al crear el directorio MyCameraVideo.");
                 return null;
             }
         }
-        // Create a media file name
+        // Create el nombre del video
 
-        // For unique file name appending current timeStamp with file name
+        // Para que el nombre sea unico, se usa la fecha y hora en el que se lo grabo
         java.util.Date date= new java.util.Date();
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss")
                 .format(date.getTime());
         File mediaFile;
         if(type == MEDIA_TYPE_VIDEO) {
-            // For unique video file name appending current timeStamp with file name
+            // Si el archivo a crear es de video, le agrega VID_ y la extension .mp4
             mediaFile = new File(mediaStorageDir.getPath() + File.separator +
                     "VID_"+ timeStamp + ".mp4");
         } else {
@@ -132,46 +122,35 @@ public class Recepcion extends AppCompatActivity {
     {
         super.onActivityResult(_requestCode, resultCode, data);
 
-        // After camera screen this code will excuted
+        // Codigo que se ejecuta al abrirse la camara
 
         if (_requestCode == CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE) {
 
             if (resultCode == RESULT_OK) {
 
-                //output.setText("Video File : " +data.getData());
-                output.setText("Video File: " + fileUri);
-
-                // Video captured and saved to fileUri specified in the Intent
-                /*Toast.makeText(this, "Video saved to: " +
-                        data.getData(), Toast.LENGTH_LONG).show();*/
-
                 Toast.makeText(this, "Video almacenado en: " +
-                        fileUri, Toast.LENGTH_LONG).show();
+                        fileUri, Toast.LENGTH_SHORT).show();
 
             } else if (resultCode == RESULT_CANCELED) {
-                output.setText("User cancelled the video capture.");
-                // User cancelled the video capture
+
                 Toast.makeText(this, "El usuario cancelo la captura del video",
                         Toast.LENGTH_LONG).show();
             } else {
-                output.setText("Video capture failed.");
-                // Video capture failed, advise user
+
                 Toast.makeText(this, "La captura de video fallo",
                         Toast.LENGTH_LONG).show();
-
             }
-            /*
+
             try{
                 mediaFileVideo.createNewFile();
-            } catch (IOException e){
+            } catch (Exception e){
                 e.printStackTrace();
-            }*/
+            }
 
             TextView text = (TextView) findViewById(R.id.output);
             text.setText("Estado: Video Cargado");
 
-            //Uri uri = data.getData();
-            //iterateVideo(fileUri, ActivityContext,false);
+            //iterateVideo(fileUri);
         }
     }
 
@@ -181,17 +160,11 @@ public class Recepcion extends AppCompatActivity {
 
 
     public void iterateVideo(Uri uri) {
-        // 1000000
         FFmpegMediaMetadataRetriever med = new FFmpegMediaMetadataRetriever();
-        //med.setDataSource(context, uri);
-        //String path = getPath(context, uri);
 
-
-        //med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/VideoXD.mp4");
-
+        //med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/Video.mp4");
 
         med.setDataSource(uri.toString());
-
 
 
         String time = med.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION);
@@ -248,7 +221,6 @@ public class Recepcion extends AppCompatActivity {
                 //imprimirFrames(bmRGB, maxLuminance[0], minLuminance[0]);
                 bmBits = getBits(bmRGB, maxLuminance[0], minLuminance[0]);
                 getMsg(bmBits);
-
 
 
             }
@@ -418,7 +390,6 @@ public class Recepcion extends AppCompatActivity {
         if (errorFlag){
             Toast.makeText(Recepcion.this,"Existen errores de paridad en uno o más caracteres, se mostrarán con '*'",Toast.LENGTH_SHORT);
         }
-        //Toast.makeText(this, message, Toast.LENGTH_LONG).show();
 
     }
 
@@ -479,8 +450,9 @@ public class Recepcion extends AppCompatActivity {
                     average = Color.rgb(averageRed, averageGreen, averageBlue);
 
                 }
-            }}catch (Exception e){
-            //Toast.makeText(Recepcion.this,"Bitmap vacio",Toast.LENGTH_SHORT);
+        }
+        } catch (Exception e){
+
             Bundle objBundle = new Bundle();
             objBundle.putString("MSG_KEY", "Se detecto un frame vacio");
             Message objMessage = new Message();
