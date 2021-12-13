@@ -388,7 +388,8 @@ public class Recepcion extends AppCompatActivity {
         i.putExtra("Msg", message);
         startActivity(i);
         if (errorFlag){
-            Toast.makeText(Recepcion.this,"Existen errores de paridad en uno o más caracteres, se mostrarán con '*'",Toast.LENGTH_SHORT);
+            Toast.makeText(Recepcion.this,"Existen errores de paridad en uno o " +
+                    "más caracteres, se mostrarán con '*'",Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -428,7 +429,6 @@ public class Recepcion extends AppCompatActivity {
         int pixelCount = 0;
         int average = 0;
 
-        //Bitmap emptyBitmap = Bitmap.createBitmap(1920, 1080, Bitmap.Config.ARGB_8888);
         try{
         if (bm != null){
                 Bitmap bitmap = scaleDown(bm, 10,true);
