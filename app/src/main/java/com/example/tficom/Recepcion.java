@@ -11,10 +11,13 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -299,6 +302,7 @@ public class Recepcion extends AppCompatActivity {
             Message objMessage = new Message();
             objMessage.setData(objBundle);
             objHandler.sendMessage(objMessage);
+            MessageView.retransmissionAlert();
         }
 
     }
@@ -707,6 +711,8 @@ public class Recepcion extends AppCompatActivity {
             return symbol;
         }
     }
+
+
 
 
 }

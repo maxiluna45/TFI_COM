@@ -150,8 +150,6 @@ public class Emision extends AppCompatActivity {
 
         Thread objBgThread = new Thread(objRunnable);
         objBgThread.start();
-
-
     }
 
     private boolean validateChar(Character letra) {

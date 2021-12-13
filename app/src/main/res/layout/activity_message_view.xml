@@ -31,4 +31,24 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <Button
+        android:id="@+id/retransmission_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Retransmisión"
+        tools:layout_editor_absoluteX="49dp"
+        tools:layout_editor_absoluteY="653dp"
+        tools:ignore="MissingConstraints,OnClick"
+        android:onClick="retransmissionAlert"/>
+
+    <Button
+        android:id="@+id/correct_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Correcto"
+        tools:layout_editor_absoluteX="249dp"
+        tools:layout_editor_absoluteY="653dp"
+        tools:ignore="MissingConstraints,OnClick"
+        android:onClick="correctMessage"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
