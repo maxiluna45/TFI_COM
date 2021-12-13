@@ -1,10 +1,12 @@
 package com.example.tficom;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.EditText;
@@ -13,6 +15,7 @@ import android.widget.TextView;
 public class MessageView extends AppCompatActivity {
 
     static boolean flashEncendido = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,17 +25,18 @@ public class MessageView extends AppCompatActivity {
         if (extras != null) {
             String message = extras.getString("Msg");
             TextView text = findViewById(R.id.msg);
-            text.setText("' "+message+" '");
-
-            }
+            text.setText("' " + message + " '");
 
         }
+
     }
 
-    public static void retransmissionAlert() {
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void retransmissionAlert() {
         // Emite la alerta de retransmisión
 
-        for(int j = 0; j < 5; j++) {
+        for (int j = 0; j < 5; j++) {
             for (int i = 0; i < 3; i++) {
                 flashOn();
                 try {
@@ -56,11 +60,12 @@ public class MessageView extends AppCompatActivity {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     public void correctMessage() {
         // Emite la alerta para indicar que el mensaje llegó correctamente,
         // o con errores, pero es legible por el usuario
 
-        for(int j = 0; j < 5; j++) {
+        for (int j = 0; j < 5; j++) {
             for (int i = 0; i < 2; i++) {
                 flashOn();
                 try {
@@ -84,7 +89,8 @@ public class MessageView extends AppCompatActivity {
         }
     }
 
-    private static void flashOn() {
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void flashOn() {
         // Funcion que prende el flash
         CameraManager cameraM = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         try {
@@ -97,7 +103,8 @@ public class MessageView extends AppCompatActivity {
         }
     }
 
-    private static void flashOff() {
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void flashOff() {
         // Funcion que apaga el flash
         CameraManager cameraM = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         try {
@@ -109,3 +116,4 @@ public class MessageView extends AppCompatActivity {
             Log.e("Error en la camara", "No se pudo apagar la linterna");
         }
     }
+}

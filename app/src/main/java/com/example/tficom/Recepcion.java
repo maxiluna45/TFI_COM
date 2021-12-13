@@ -268,6 +268,7 @@ public class Recepcion extends AppCompatActivity {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void getMsg(ArrayList<String> bmBits) {
         int startPosition = 0;
         int newPosition;
@@ -302,7 +303,10 @@ public class Recepcion extends AppCompatActivity {
             Message objMessage = new Message();
             objMessage.setData(objBundle);
             objHandler.sendMessage(objMessage);
-            MessageView.retransmissionAlert();
+
+            //Si no se detectó el bit de start, se emite una alerta de retransmisión
+            MessageView messageView = new MessageView();
+            messageView.retransmissionAlert();
         }
 
     }
