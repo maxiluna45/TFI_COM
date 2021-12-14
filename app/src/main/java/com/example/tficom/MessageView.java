@@ -4,12 +4,14 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,10 +29,19 @@ public class MessageView extends AppCompatActivity {
         if (extras != null) {
             String message = extras.getString("Msg");
             Boolean errorFlag = extras.getBoolean("ErrorFlag");
+            Boolean startFlag = extras.getBoolean("StartFlag");
             if (errorFlag){
                 Toast.makeText(MessageView.this,"Existen errores de paridad en uno o " +
                         "más caracteres, se mostrarán con '*'",Toast.LENGTH_SHORT).show();
             }
+
+            if(!startFlag){
+                Toast.makeText(MessageView.this,"No se detecto el caracter de start",Toast.LENGTH_SHORT).show();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    retransmissionAlert();
+                }
+            }
+
             TextView text = findViewById(R.id.msg);
             text.setText("' " + message + " '");
 
@@ -39,32 +50,50 @@ public class MessageView extends AppCompatActivity {
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    public void retransmissionAlert(View view) {
-        // Emite la alerta de retransmisión
-
-        for (int j = 0; j < 5; j++) {
-            for (int i = 0; i < 3; i++) {
-                flashOn();
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                flashOff();
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+    public void onTouch(View view){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            retransmissionAlert();
         }
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void retransmissionAlert() {
+        // Emite la alerta de retransmisión
+        Runnable objRunnable = new Runnable() {
+
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            @Override
+            public void run() {
+                for (int j = 0; j < 5; j++) {
+                    for (int i = 0; i < 3; i++) {
+                        flashOn();
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        flashOff();
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+        };
+
+        Thread objBgThread = new Thread(objRunnable);
+        objBgThread.start();
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -72,28 +101,42 @@ public class MessageView extends AppCompatActivity {
         // Emite la alerta para indicar que el mensaje llegó correctamente,
         // o con errores, pero es legible por el usuario
 
-        for (int j = 0; j < 5; j++) {
-            for (int i = 0; i < 2; i++) {
-                flashOn();
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                flashOff();
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+        Runnable objRunnable = new Runnable() {
 
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            @Override
+            public void run() {
+
+                for (int j = 0; j < 5; j++) {
+                    for (int i = 0; i < 2; i++) {
+                        flashOn();
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        flashOff();
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+
             }
-        }
+        };
+
+        Thread objBgThread = new Thread(objRunnable);
+        objBgThread.start();
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)

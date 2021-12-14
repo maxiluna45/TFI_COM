@@ -38,7 +38,7 @@
         android:layout_width="165dp"
         android:layout_height="58dp"
         android:layout_marginBottom="36dp"
-        android:onClick="retransmissionAlert"
+        android:onClick="onTouch"
         android:text="Retransmisión"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/correct_btn"

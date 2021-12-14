@@ -158,7 +158,7 @@ public class Recepcion extends AppCompatActivity {
     }
 
     public void processVideo(View view){
-        fileUri = Uri.parse("file:///storage/emulated/0/Pictures/MyCameraVideo/VID_20211213_235239.mp4");
+        //fileUri = Uri.parse("file:///storage/emulated/0/Pictures/MyCameraVideo/VID_20211213_235239.mp4");
         if(fileUri != null)
             iterateVideo(fileUri);
         else
@@ -169,10 +169,10 @@ public class Recepcion extends AppCompatActivity {
     public void iterateVideo(Uri uri) {
         FFmpegMediaMetadataRetriever med = new FFmpegMediaMetadataRetriever();
 
-        med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/VID_20211214_161421.mp4");
+        //med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/VID_20211214_161421.mp4");
 
 
-        //med.setDataSource(uri.toString());
+        med.setDataSource(uri.toString());
 
 
         String time = med.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION);
@@ -302,17 +302,19 @@ public class Recepcion extends AppCompatActivity {
 
         }
         else {
-            Bundle objBundle = new Bundle();
+            /*Bundle objBundle = new Bundle();
             objBundle.putString("MSG_KEY", "No se encontro el bit de start");
             Message objMessage = new Message();
             objMessage.setData(objBundle);
-            objHandler.sendMessage(objMessage);
+            objHandler.sendMessage(objMessage);*/
 
             //Si no se detectó el bit de start, se emite una alerta de retransmisión
-            MessageView messageView = new MessageView();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                messageView.retransmissionAlert(null);
-            }
+            Intent i = new Intent(Recepcion.this,MessageView.class);
+            i.putExtra("Msg", "");
+            i.putExtra("ErrorFlag",false);
+            i.putExtra("StartFlag",false);
+            startActivity(i);
+
         }
 
     }
@@ -401,6 +403,7 @@ public class Recepcion extends AppCompatActivity {
         Intent i = new Intent(Recepcion.this,MessageView.class);
         i.putExtra("Msg", message);
         i.putExtra("ErrorFlag",errorFlag);
+        i.putExtra("StartFlag",true);
         startActivity(i);
 
     }
