@@ -109,7 +109,9 @@ public class Emision extends AppCompatActivity {
         mensaje = Normalizer.normalize(mensaje, Normalizer.Form.NFD);
         mensaje = mensaje.replaceAll("[^\\p{ASCII}]", "");
 
-        if (!mensaje.matches("^[a-z0-9_,.?]+$")) {
+        String validateMsg = mensaje.replace(" ", "");
+
+        if (!validateMsg.matches("^[a-z0-9,.?]+$")) {
             Toast.makeText(Emision.this, "Se ingreso un caracter invalido", Toast.LENGTH_SHORT).show();
         }
         else{

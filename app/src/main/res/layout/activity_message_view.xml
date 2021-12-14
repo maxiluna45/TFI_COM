@@ -25,10 +25,11 @@
         android:id="@+id/msg"
         android:layout_width="308dp"
         android:layout_height="399dp"
-        android:layout_marginTop="97dp"
+        android:layout_marginTop="64dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
@@ -36,19 +37,26 @@
         android:id="@+id/retransmission_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:onClick="retransmissionAlert"
         android:text="Retransmisión"
-        tools:layout_editor_absoluteX="49dp"
-        tools:layout_editor_absoluteY="653dp"
-        tools:ignore="MissingConstraints,OnClick"
-        android:onClick="retransmissionAlert"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/correct_btn"
+        app:layout_constraintHorizontal_bias="0.565"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/msg"
+        tools:ignore="MissingConstraints,OnClick" />
 
     <Button
         android:id="@+id/correct_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="52dp"
+        android:layout_marginBottom="24dp"
+        android:onClick="correctMessage"
         android:text="Correcto"
-        tools:layout_editor_absoluteX="249dp"
-        tools:layout_editor_absoluteY="653dp"
-        tools:ignore="MissingConstraints,OnClick"
-        android:onClick="correctMessage"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/msg"
+        app:layout_constraintVertical_bias="0.706"
+        tools:ignore="MissingConstraints,OnClick" />
 </androidx.constraintlayout.widget.ConstraintLayout>

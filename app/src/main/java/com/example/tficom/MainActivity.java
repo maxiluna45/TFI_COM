@@ -7,9 +7,11 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.hardware.camera2.CameraManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -37,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean checkPermission() {
         List<String> listPermissionsNeeded = new ArrayList<>();
+
 
         int camera = ContextCompat.checkSelfPermission(MainActivity.this,
                 Manifest.permission.CAMERA);;
