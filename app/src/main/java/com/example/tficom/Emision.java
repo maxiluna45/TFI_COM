@@ -154,10 +154,6 @@ public class Emision extends AppCompatActivity {
         objBgThread.start();
     }
 
-    private boolean validateChar(Character letra) {
-        return true;
-    }
-
 
     public String agregarParidad(String charCodificado) {
         // Funcion que chequea la cantidad de 1's y agrega o no otro, segun si es impar o par
@@ -268,6 +264,7 @@ public class Emision extends AppCompatActivity {
     public void changeBitTime(View view){
         EditText time = (EditText)findViewById(R.id.bitTime);
         bitTime = Integer.parseInt(time.getText().toString());
+        Toast.makeText(Emision.this, "Tiempo del bit cambiado a: "+ String.valueOf(bitTime),Toast.LENGTH_SHORT).show();
     }
 
     public String codificarChar(Character letra) {
