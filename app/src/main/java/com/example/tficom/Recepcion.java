@@ -710,6 +710,9 @@ public class Recepcion extends AppCompatActivity {
                 case "100000":
                     symbol = "#";
                     break;
+                case "010101":
+                    symbol = "?";
+                    break;
 
                 default:
                     symbol = "$";

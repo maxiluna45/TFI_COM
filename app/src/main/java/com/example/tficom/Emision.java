@@ -393,6 +393,9 @@ public class Emision extends AppCompatActivity {
             case '.':
                 charCodificado = "100011";
                 break;
+            case '?':
+                charCodificado = "010101";
+                break;
 
             default:
                 throw new IllegalStateException("Carácter inválido: " + letra);
