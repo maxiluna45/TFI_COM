@@ -158,7 +158,10 @@ public class Recepcion extends AppCompatActivity {
     }
 
     public void processVideo(View view){
-        iterateVideo(fileUri);
+        if(fileUri != null)
+            iterateVideo(fileUri);
+        else
+            Toast.makeText(Recepcion.this,"No hay video cargado",Toast.LENGTH_LONG).show();
     }
 
 
