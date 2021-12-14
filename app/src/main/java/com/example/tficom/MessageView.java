@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MessageView extends AppCompatActivity {
 
@@ -24,6 +25,11 @@ public class MessageView extends AppCompatActivity {
 
         if (extras != null) {
             String message = extras.getString("Msg");
+            Boolean errorFlag = extras.getBoolean("ErrorFlag");
+            if (errorFlag){
+                Toast.makeText(MessageView.this,"Existen errores de paridad en uno o " +
+                        "más caracteres, se mostrarán con '*'",Toast.LENGTH_SHORT).show();
+            }
             TextView text = findViewById(R.id.msg);
             text.setText("' " + message + " '");
 

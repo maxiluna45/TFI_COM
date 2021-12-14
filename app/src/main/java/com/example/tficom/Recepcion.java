@@ -158,6 +158,7 @@ public class Recepcion extends AppCompatActivity {
     }
 
     public void processVideo(View view){
+        //fileUri = Uri.parse("file:///storage/emulated/0/Pictures/MyCameraVideo/VID_20211213_235239.mp4");
         if(fileUri != null)
             iterateVideo(fileUri);
         else
@@ -168,7 +169,8 @@ public class Recepcion extends AppCompatActivity {
     public void iterateVideo(Uri uri) {
         FFmpegMediaMetadataRetriever med = new FFmpegMediaMetadataRetriever();
 
-        //med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/Video.mp4");
+        //med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/VID_20211213_231034.mp4");
+
 
         med.setDataSource(uri.toString());
 
@@ -397,11 +399,8 @@ public class Recepcion extends AppCompatActivity {
 
         Intent i = new Intent(Recepcion.this,MessageView.class);
         i.putExtra("Msg", message);
+        i.putExtra("ErrorFlag",errorFlag);
         startActivity(i);
-        if (errorFlag){
-            Toast.makeText(Recepcion.this,"Existen errores de paridad en uno o " +
-                    "más caracteres, se mostrarán con '*'",Toast.LENGTH_SHORT).show();
-        }
 
     }
 
