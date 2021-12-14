@@ -9,6 +9,7 @@ import android.hardware.camera2.CameraManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,7 +40,7 @@ public class MessageView extends AppCompatActivity {
 
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public void retransmissionAlert() {
+    public void retransmissionAlert(View view) {
         // Emite la alerta de retransmisión
 
         for (int j = 0; j < 5; j++) {
@@ -67,7 +68,7 @@ public class MessageView extends AppCompatActivity {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public void correctMessage() {
+    public void correctMessage(View view) {
         // Emite la alerta para indicar que el mensaje llegó correctamente,
         // o con errores, pero es legible por el usuario
 

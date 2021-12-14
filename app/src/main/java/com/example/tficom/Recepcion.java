@@ -158,7 +158,7 @@ public class Recepcion extends AppCompatActivity {
     }
 
     public void processVideo(View view){
-        //fileUri = Uri.parse("file:///storage/emulated/0/Pictures/MyCameraVideo/VID_20211213_235239.mp4");
+        fileUri = Uri.parse("file:///storage/emulated/0/Pictures/MyCameraVideo/VID_20211213_235239.mp4");
         if(fileUri != null)
             iterateVideo(fileUri);
         else
@@ -169,10 +169,10 @@ public class Recepcion extends AppCompatActivity {
     public void iterateVideo(Uri uri) {
         FFmpegMediaMetadataRetriever med = new FFmpegMediaMetadataRetriever();
 
-        //med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/VID_20211213_231034.mp4");
+        med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/VID_20211214_161421.mp4");
 
 
-        med.setDataSource(uri.toString());
+        //med.setDataSource(uri.toString());
 
 
         String time = med.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION);
@@ -273,7 +273,6 @@ public class Recepcion extends AppCompatActivity {
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     private void getMsg(ArrayList<String> bmBits) {
         int startPosition = 0;
         int newPosition;
@@ -311,7 +310,9 @@ public class Recepcion extends AppCompatActivity {
 
             //Si no se detectó el bit de start, se emite una alerta de retransmisión
             MessageView messageView = new MessageView();
-            messageView.retransmissionAlert();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                messageView.retransmissionAlert(null);
+            }
         }
 
     }
