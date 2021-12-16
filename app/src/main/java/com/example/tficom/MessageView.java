@@ -69,13 +69,13 @@ public class MessageView extends AppCompatActivity {
                     for (int i = 0; i < 3; i++) {
                         flashOn();
                         try {
-                            Thread.sleep(100);
+                            Thread.sleep(200);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
                         flashOff();
                         try {
-                            Thread.sleep(100);
+                            Thread.sleep(200);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
@@ -111,13 +111,13 @@ public class MessageView extends AppCompatActivity {
                     for (int i = 0; i < 2; i++) {
                         flashOn();
                         try {
-                            Thread.sleep(100);
+                            Thread.sleep(200);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
                         flashOff();
                         try {
-                            Thread.sleep(100);
+                            Thread.sleep(200);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }

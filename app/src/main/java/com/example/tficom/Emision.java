@@ -56,7 +56,7 @@ public class Emision extends AppCompatActivity {
             Toast.makeText(Emision.this, "El dispositivo no cuenta con Flash", Toast.LENGTH_SHORT).show();
 
     }
-
+/*
     InputFilter filter = new InputFilter() {
         @Override
         public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
@@ -70,7 +70,7 @@ public class Emision extends AppCompatActivity {
             return null;
         }
     };
-
+*/
 
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -104,7 +104,7 @@ public class Emision extends AppCompatActivity {
     public void getMessage(View view) {
         // Funcion que toma el mensaje escrito, luego de colocar enviar
         text = findViewById(R.id.edx_mensaje);
-        text.setFilters(new InputFilter[]{filter});
+        //text.setFilters(new InputFilter[]{filter});
         mensaje = text.getText().toString().trim();
         mensaje = Normalizer.normalize(mensaje, Normalizer.Form.NFD);
         mensaje = mensaje.replaceAll("[^\\p{ASCII}]", "");
