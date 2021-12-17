@@ -28,7 +28,10 @@ import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.io.File;
@@ -51,6 +54,7 @@ public class Recepcion extends AppCompatActivity {
     public static Recepcion ActivityContext = null;
     public static TextView output;
 
+    Spinner opciones;
 
     Handler objHandler = new Handler()
     {
@@ -77,6 +81,9 @@ public class Recepcion extends AppCompatActivity {
         output = (TextView)findViewById(R.id.output);
         //checkExternalStoragePermission();
 
+        opciones = (Spinner) findViewById(R.id.distance_spn);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.opciones, android.R.layout.simple_spinner_item);
+        opciones.setAdapter(adapter);
     }
 
 
@@ -169,10 +176,10 @@ public class Recepcion extends AppCompatActivity {
     public void iterateVideo(Uri uri) {
         FFmpegMediaMetadataRetriever med = new FFmpegMediaMetadataRetriever();
 
-        //med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/VID_20211214_161421.mp4");
+        med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/VID_20211214_205638.mp4");
 
 
-        med.setDataSource(uri.toString());
+        //med.setDataSource(uri.toString());
 
 
         String time = med.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION);
@@ -244,7 +251,7 @@ public class Recepcion extends AppCompatActivity {
 
         // Calcula la luminancia promedio, y transforma un vector de luminancias en un vector de bits
 
-        float averageLuminance = ((maxLuminance + minLuminance) / 4);
+        float averageLuminance = calculateAverageLuminance(maxLuminance, minLuminance);
 
         ArrayList<String> bmBits = new ArrayList<>();
 
@@ -255,6 +262,13 @@ public class Recepcion extends AppCompatActivity {
         }
 
         return bmBits;
+    }
+
+    private float calculateAverageLuminance(float maxLuminance, float minLuminance){
+        int spinner_pos = opciones.getSelectedItemPosition();
+        String[] valores = getResources().getStringArray(R.array.valores);
+        int valor = Integer.valueOf(valores[spinner_pos]); // 4, 3, 2
+        return ((maxLuminance + minLuminance) / valor);
     }
 
     private void imprimirFrames(ArrayList<Float> bmRGB, float maxLuminance, float minLuminance){
