@@ -201,63 +201,6 @@ public class Emision extends AppCompatActivity {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    public void emitirAlerta1(String mensaje) {
-
-        // Emite la alarta inicial
-
-        for (int i = 0; i < mensaje.length(); i++) {
-            Character letra = mensaje.charAt(i);
-            if (letra == '1')
-                if (!flashEncendido)
-                    flashOn();
-            if (letra == '0')
-                if (flashEncendido)
-                    flashOff();
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        if (flashEncendido)
-            flashOff();
-
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    public void emitirAlerta2(String mensaje) {
-
-        // Emite la alerta secundaria
-
-        for (int i = 0; i < mensaje.length(); i++) {
-            Character letra = mensaje.charAt(i);
-            if (letra == '1')
-                if (!flashEncendido)
-                    flashOn();
-            if (letra == '0')
-                if (flashEncendido)
-                    flashOff();
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        if (flashEncendido)
-            flashOff();
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void emitirMsg(String mensaje) {
@@ -265,10 +208,7 @@ public class Emision extends AppCompatActivity {
         // Se llaman a las dos alertas
         emitirAlerta("101010101", 1000); //Alerta 1
         emitirAlerta("101010101", 500); //Alerta 2
-
-        /*emitirAlerta1("101010101"); //Alerta 1
-        emitirAlerta2("101010101"); //Alerta 2
-*/
+        
         // Se envia el mensaje
 
         for (int i = 0; i < mensaje.length(); i++) {
