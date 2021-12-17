@@ -82,8 +82,9 @@ public class Recepcion extends AppCompatActivity {
         //checkExternalStoragePermission();
 
         opciones = (Spinner) findViewById(R.id.distance_spn);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.opciones, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.opciones, android.R.layout.simple_spinner_dropdown_item);
         opciones.setAdapter(adapter);
+
     }
 
 
