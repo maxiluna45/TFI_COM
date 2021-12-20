@@ -82,7 +82,8 @@ public class Recepcion extends AppCompatActivity {
         //checkExternalStoragePermission();
 
         opciones = (Spinner) findViewById(R.id.distance_spn);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.opciones, android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.opciones, android.R.layout.simple_spinner_dropdown_item);
         opciones.setAdapter(adapter);
 
     }
@@ -177,10 +178,7 @@ public class Recepcion extends AppCompatActivity {
     public void iterateVideo(Uri uri) {
         FFmpegMediaMetadataRetriever med = new FFmpegMediaMetadataRetriever();
 
-        med.setDataSource("file:///storage/emulated/0/Pictures/MyCameraVideo/VID_20211214_205638.mp4");
-
-
-        //med.setDataSource(uri.toString());
+        med.setDataSource(uri.toString());
 
 
         String time = med.extractMetadata(FFmpegMediaMetadataRetriever.METADATA_KEY_DURATION);
@@ -267,8 +265,11 @@ public class Recepcion extends AppCompatActivity {
 
     private float calculateAverageLuminance(float maxLuminance, float minLuminance){
         int spinner_pos = opciones.getSelectedItemPosition();
+
         String[] valores = getResources().getStringArray(R.array.valores);
+
         int valor = Integer.valueOf(valores[spinner_pos]); // 4, 3, 2
+
         return ((maxLuminance + minLuminance) / valor);
     }
 
@@ -508,9 +509,8 @@ public class Recepcion extends AppCompatActivity {
         return newBitmap;
     }
 
-    @SuppressLint("SupportAnnotationUsage")
+
     @RequiresApi(api = Build.VERSION_CODES.N)
-    @ColorInt
     private float getRelativeLuminance(@ColorInt int color){
 
         // Funcion que, dado un Color Int devuelve su luminancia

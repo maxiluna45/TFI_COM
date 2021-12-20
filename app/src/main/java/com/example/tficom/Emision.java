@@ -106,8 +106,10 @@ public class Emision extends AppCompatActivity {
         text = findViewById(R.id.edx_mensaje);
         //text.setFilters(new InputFilter[]{filter});
         mensaje = text.getText().toString().trim();
+        mensaje = mensaje.replace('ñ','\001');
         mensaje = Normalizer.normalize(mensaje, Normalizer.Form.NFD);
-        mensaje = mensaje.replaceAll("[^\\p{ASCII}]", "");
+        mensaje = mensaje.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+        mensaje = mensaje.replace('\001', 'ñ');
 
         String validateMsg = mensaje.replace(" ", "");
 
@@ -208,7 +210,7 @@ public class Emision extends AppCompatActivity {
         // Se llaman a las dos alertas
         emitirAlerta("101010101", 1000); //Alerta 1
         emitirAlerta("101010101", 500); //Alerta 2
-        
+
         // Se envia el mensaje
 
         for (int i = 0; i < mensaje.length(); i++) {
