@@ -113,7 +113,7 @@ public class Emision extends AppCompatActivity {
 
         String validateMsg = mensaje.replace(" ", "");
 
-        if (!validateMsg.matches("^[a-zA-Z0-9,.?]+$")) {
+        if (!validateMsg.matches("^[a-zA-Z0-9,.?\\u00f1]+$")) {
             Toast.makeText(Emision.this, "Se ingreso un caracter invalido", Toast.LENGTH_SHORT).show();
         }
         else{

@@ -305,11 +305,11 @@ public class Recepcion extends AppCompatActivity {
                     if(newPosition != -1)
                         i = newPosition + 2;
                     else{
-                        Bundle objBundle = new Bundle();
+                        /*Bundle objBundle = new Bundle();
                         objBundle.putString("MSG_KEY", "Error de sincronismo");
                         Message objMessage = new Message();
                         objMessage.setData(objBundle);
-                        objHandler.sendMessage(objMessage);
+                        objHandler.sendMessage(objMessage);*/
                     }
                 }
             }
